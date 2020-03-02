@@ -41,7 +41,7 @@ print(len(cn_train))
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
-labels = np.concatenate(np.ones(len(ad_files)) + np.zeros(len(cn_files)), axis=None)
+labels = np.concatenate(np.ones(len(ad_train)) + np.zeros(len(cn_train)), axis=None)
 random.Random(129).shuffle(train)
 random.Random(129).shuffle(labels)
 """Create tf data pipeline"""
