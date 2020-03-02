@@ -48,17 +48,6 @@ print(len(labels))
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
 
-def get_images(files):
-    return_list = []
-    for file in files:
-        nifti_data = np.asarray(nibabel.load(file).get_fdata())
-        xs, ys, zs = np.where(nifti_data != 0)
-        nifti_data = nifti_data[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
-        nifti_data = nifti_data[0:100, 0:100, 0:100]
-        nifti_data = np.reshape(nifti_data, (100, 100, 100, 1))
-        return_list.append(nifti_data)
-    return return_list
-
 """Create tf data pipeline"""
 
 
@@ -145,7 +134,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
 
 ########################################################################################
 
-model.fit(x=batch_of_images, epochs=50)
+model.fit(x=(batch_of_images[0], batch_of_images[1]), epochs=50)
 
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
