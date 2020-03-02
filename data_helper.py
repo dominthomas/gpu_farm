@@ -1,5 +1,7 @@
 import nibabel
 import numpy as np
+from tensorflow import keras as K
+
 
 class DataGenerator(K.utils.Sequence):
 
@@ -53,6 +55,3 @@ class DataGenerator(K.utils.Sequence):
         X, y = self.__data_generation(list_IDs_temp)
 
         return X, y
-
-
-
