@@ -128,11 +128,11 @@ params = {'dim': (176, 256, 256),
           'shuffle': True}
 training_generator = DataGenerator(partition['train'], labels, **params)
 validation_generator = DataGenerator(partition['validation'], labels, **params)
-model.fit_generator(generator=training_generator,
-                    validation_generator=validation_generator,
-                    use_multiprocessing=True,
-                    workers=5,
-                    epochs=200)
+model.fit(generator=training_generator,
+          validation_generator=validation_generator,
+          use_multiprocessing=True,
+          workers=5,
+          epochs=200)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 ad_test_files = os.listdir("/home/k1651915/ADNI/3D/AD/")
