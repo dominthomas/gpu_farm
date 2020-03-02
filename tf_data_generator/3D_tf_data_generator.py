@@ -47,17 +47,17 @@ print(len(labels))
 """Create tf data pipeline"""
 
 
-def load_image(file, labels):
+def load_image(file, label):
     nifti = np.asarray(nibabel.load(file).get_fdata())
 
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
-    return nifti, labels
+    return nifti, label
 
 
-dataset = tf.data.TFRecordDataset((train, labels))
+dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image, num_parallel_calls=6)
 dataset = dataset.batch(6)
 dataset = dataset.prefetch(buffer_size=6)
