@@ -53,6 +53,17 @@ os.chdir("/home/k1651915/OASIS/3D/all/")
 """Create tf data pipeline"""
 
 
+def get_images(files):
+    return_list = []
+    for file in files:
+        nifti_data = np.asarray(nibabel.load(file).get_fdata())
+        xs, ys, zs = np.where(nifti_data != 0)
+        nifti_data = nifti_data[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
+        nifti_data = nifti_data[0:100, 0:100, 0:100]
+        nifti_data = np.reshape(nifti_data, (100, 100, 100, 1))
+        return_list.append(nifti_data)
+    return return_list
+
 def load_image(file, label):
     nifti = np.asarray(nibabel.load(file.numpy().decode('utf-8')).get_fdata())
 
@@ -136,7 +147,7 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 ########################################################################################
 
-model.fit_generator(batch_of_images, batch_of_images, epochs=10)
+model.fit(generator=batch_of_images, epochs=10)
 
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
