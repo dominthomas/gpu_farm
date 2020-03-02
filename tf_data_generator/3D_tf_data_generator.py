@@ -50,7 +50,7 @@ print(len(labels))
 
 
 def load_image(file, label):
-    nifti = np.asarray(nibabel.load(tf.io.decode_raw(file, tf.string)).get_fdata())
+    nifti = np.asarray(nibabel.load(file.decode('utf-8')).get_fdata())
 
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
@@ -61,7 +61,7 @@ def load_image(file, label):
 
 
 def load_image_wrapper(file, labels):
-   file = tf.py_function(load_image, [file, labels], (tf.float32, tf.int32))
+   file = tf.py_function(load_image, [file, labels], (tf.string, tf.int32))
    return file
 
 
