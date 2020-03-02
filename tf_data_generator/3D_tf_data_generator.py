@@ -48,7 +48,7 @@ print(len(labels))
 
 
 def load_image(file, label):
-    nifti = np.asarray(nibabel.load(file.item()).get_fdata())
+    nifti = np.asarray(nibabel.load(file).get_fdata())
 
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
@@ -58,7 +58,7 @@ def load_image(file, label):
     return nifti, label
 
 
-dataset = tf.data.Dataset.from_tensor_slices((train, labels))
+dataset = tf.data.Dataset.list_files((train, labels))
 dataset = dataset.map(load_image, num_parallel_calls=6)
 dataset = dataset.batch(6)
 dataset = dataset.prefetch(buffer_size=6)
