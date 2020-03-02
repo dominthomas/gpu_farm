@@ -154,7 +154,7 @@ def get_images(files):
 os.chdir("/home/k1651915/ADNI/3D/resized_ad/")
 ad_test = np.asarray(get_images(ad_test_files))
 os.chdir("/home/k1651915/ADNI/3D/resized_cn/")
-cn_test = np.asrray(get_images(cn_test_files))
+cn_test = np.asarray(get_images(cn_test_files))
 
 # test = np.asarray(ad_test + cn_test)
 ad_test_labels = [np.ones(5), [2]]
