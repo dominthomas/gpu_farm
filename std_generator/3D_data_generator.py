@@ -35,20 +35,20 @@ random.Random(129).shuffle(cn_files)
 cn_files = cn_files[0:277]
 
 """Split files for training and validation"""
-ad_train = ad_files[0:275]
-cn_train = cn_files[0:275]
+ad_train = ad_files[0:277]
+cn_train = cn_files[0:277]
 
 """There is a chance subject bias could alter validation accuracy, but I don't care about this atm"""
 """TODO: In future, use samples from ADNI DataSet to account for Subject bias"""
-ad_validation = ad_files[276:277]
-cn_validation = cn_files[276:277]
+# ad_validation = ad_files[276:277]
+# cn_validation = cn_files[276:277]
 
 """Shuffle Train set"""
 train = ad_train + cn_train
 random.Random(129).shuffle(train)
 
 """Create a data dictionary with MRI file names"""
-partition = {'train': train, 'validation': [ad_validation + cn_validation]}
+partition = {'train': train}
 labels = {}
 for item in ad_files:
     labels[item] = 1
@@ -119,17 +119,13 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
 params = {'dim': (100, 100, 100),
-          'batch_size': 6,
+          'batch_size': 10,
           'n_classes': 2,
           'n_channels': 1,
           'shuffle': True}
 training_generator = DataGenerator(partition['train'], labels, **params)
-validation_generator = DataGenerator(partition['validation'], labels, **params)
 model.fit_generator(generator=training_generator,
-                    validation_data=validation_generator,
-                    use_multiprocessing=True,
-                    workers=6,
-                    epochs=100)
+                    epochs=10)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
@@ -159,7 +155,6 @@ ad_test = np.asarray(get_images(ad_test_files))
 os.chdir("/home/k1651915/ADNI/3D/resized_cn/")
 cn_test = np.asarray(get_images(cn_test_files))
 
-# test = np.asarray(ad_test + cn_test)
 ad_test_labels = tf.keras.utils.to_categorical(np.ones(50), 2)
 cn_test_labels = tf.keras.utils.to_categorical(np.zeros(50), 2)
 
