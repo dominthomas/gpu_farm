@@ -69,7 +69,7 @@ with tf.device("/cpu:0"):
         model = tf.keras.Sequential()
 
         model.add(Conv3D(64,
-                         input_shape=(110, 110, 100, 1),
+                         input_shape=(110, 110, 110, 1),
                          data_format='channels_last',
                          kernel_size=(7, 7, 7),
                          strides=(2, 2, 2),
