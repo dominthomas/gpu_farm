@@ -64,7 +64,7 @@ def load_image(file, label):
 
 @tf.autograph.experimental.do_not_convert
 def load_image_wrapper(file, labels):
-    return tf.py_function(load_image, [file, labels], [tf.float64])
+    return tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
@@ -135,7 +135,7 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 ########################################################################################
 
-model.fit(batch_of_images, epochs=50, steps_per_epoch=28)
+model.fit(batch_of_images[0], batch_of_images[1], epochs=50, steps_per_epoch=28)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 test_size = 5
