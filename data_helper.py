@@ -32,7 +32,12 @@ class DataGenerator(K.utils.Sequence):
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
-            X[i,] = np.reshape(np.asarray(nibabel.load(ID).get_fdata()), (176, 256, 256, 1))
+
+            nifti = np.asarray(nibabel.load(ID).get_fdata())
+            xs, ys, zs = np.where(nifti != 0)
+            nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
+            nifti = nifti[0:110, 0:110, 0:110]
+            X[i,] = np.reshape(nifti, (110, 110, 110, 1))
 
             # Store class
             y[i] = self.labels[ID]
