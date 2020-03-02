@@ -31,11 +31,13 @@ sub_id_cn = []
 """Down-sampling CN to 278 MRIs"""
 random.Random(129).shuffle(ad_files)
 random.Random(129).shuffle(cn_files)
-cn_files = cn_files[0:277]
 
 """Split files for training"""
 ad_train = ad_files[0:277]
 cn_train = cn_files[0:277]
+
+print(len(ad_files))
+print(len(cn_files))
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
