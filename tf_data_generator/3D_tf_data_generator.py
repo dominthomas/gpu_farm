@@ -61,7 +61,7 @@ def load_image(file, label):
 
 
 def load_image_wrapper(file, labels):
-    file = tf.py_func(load_image, [file, labels], (tf.float32, tf.float32))
+    file = tf.py_function(load_image, [file, labels], (tf.float32, tf.float32))
     return file
 
 
