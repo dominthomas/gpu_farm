@@ -39,16 +39,16 @@ sub_id_cn = []
 """Down-sampling CN to 278 MRIs"""
 random.Random(129).shuffle(ad_files)
 random.Random(129).shuffle(cn_files)
-cn_files = cn_files[0:277]
+cn_files = cn_files[0:601]
 
 """Split files for training and validation"""
-ad_train = ad_files[0:270]
-cn_train = cn_files[0:270]
+ad_train = ad_files[0:276]
+cn_train = cn_files[0:600]
 
 """There is a chance subject bias could alter validation accuracy, but I don't care about this atm"""
 """TODO: In future, use samples from ADNI DataSet to account for Subject bias"""
-ad_validation = ad_files[271:277]
-cn_validation = cn_files[271:277]
+ad_validation = ad_files[277]
+cn_validation = cn_files[601]
 
 """Create a data dictionary with MRI file names"""
 partition = {'train': ad_train + cn_train, 'validation': [ad_validation + cn_validation]}
@@ -137,8 +137,8 @@ ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
 cn_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_cn/")
 random.Random(921).shuffle(ad_test_files)
 random.Random(921).shuffle(cn_test_files)
-ad_test_files = ad_test_files[0:50]
-cn_test_files = cn_test_files[0:50]
+ad_test_files = ad_test_files[0:60]
+cn_test_files = cn_test_files[0:60]
 
 """Function to load 3D-MRI voxels"""
 
@@ -157,8 +157,8 @@ os.chdir("/home/k1651915/ADNI/3D/resized_cn/")
 cn_test = np.asarray(get_images(cn_test_files))
 
 # test = np.asarray(ad_test + cn_test)
-ad_test_labels = tf.keras.utils.to_categorical(np.ones(50), 2)
-cn_test_labels = tf.keras.utils.to_categorical(np.zeros(50), 2)
+ad_test_labels = tf.keras.utils.to_categorical(np.ones(60), 2)
+cn_test_labels = tf.keras.utils.to_categorical(np.zeros(60), 2)
 
 evaluation_ad = model.evaluate(ad_test, ad_test_labels, verbose=0)
 evaluation_cn = model.evaluate(cn_test, cn_test_labels, verbose=0)
