@@ -136,7 +136,7 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 ########################################################################################
 
-model.fit_generator(batch_of_images, batch_of_images, pochs=10)
+model.fit_generator(batch_of_images, batch_of_images, epochs=10)
 
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
