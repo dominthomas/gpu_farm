@@ -146,8 +146,7 @@ cn_test_files = cn_test_files[0:50]
 def get_images(files):
     return_list = []
     for file in files:
-        nifti_data = np.asarray(nibabel.load(file).get_fdata())
-        nifti_data = nifti_data.reshape(176, 256, 256, 1)
+        nifti_data = np.reshape(np.asarray(nibabel.load(file).get_fdata()), (176, 256, 256, 1))
         return_list.append(nifti_data)
     return return_list
 
