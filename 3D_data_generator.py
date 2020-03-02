@@ -126,7 +126,7 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
 params = {'dim': (176, 256, 256),
-          'batch_size': 6,
+          'batch_size': 4,
           'n_classes': 2,
           'n_channels': 1,
           'shuffle': True}
