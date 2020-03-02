@@ -51,7 +51,7 @@ ad_validation = ad_files[271:277]
 cn_validation = cn_files[271:277]
 
 """Create a data dictionary with MRI file names"""
-partition = {'train': [ad_train + cn_train], 'validation': [ad_validation + cn_validation]}
+partition = {'train': ad_train + cn_train, 'validation': [ad_validation + cn_validation]}
 labels = {}
 for item in ad_files:
     labels[item] = 1
