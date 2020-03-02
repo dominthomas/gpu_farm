@@ -33,7 +33,7 @@ class DataGenerator(K.utils.Sequence):
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
             print(ID)
-            X[i,] = np.asarray(nibabel.load(ID).get_fdata())
+            X[i,] = np.reshape(np.asarray(nibabel.load(ID).get_fdata()), (176, 256, 256, 1))
 
             # Store class
             y[i] = self.labels[ID]
