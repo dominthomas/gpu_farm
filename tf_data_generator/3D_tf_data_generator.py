@@ -128,15 +128,15 @@ with tf.device("/cpu:0"):
         model.add(Dropout(0.7))
         model.add(Dense(256, activation='relu'))
         model.add(Dropout(0.7))
-        model.add(Dense(1, activation='sigmoid'))
+        model.add(Dense(2, activation='softmax'))
 
-model.compile(loss=tf.keras.losses.binary_crossentropy,
+model.compile(loss=tf.keras.losses.categorical_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 
 ########################################################################################
 
-model.fit(batch_of_images, epochs=10)
+model.fit_generator(batch_of_images, epochs=10)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
