@@ -48,7 +48,7 @@ print(len(labels))
 
 
 def load_image(file, label):
-    file = tf.io.read_file(file)
+    file = tf.io.read_file(tf.strings.as_string(file))
     nifti = np.asarray(nibabel.load(file).get_fdata())
 
     xs, ys, zs = np.where(nifti != 0)
