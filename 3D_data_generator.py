@@ -125,7 +125,7 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
-params = {'dim': (176, 256, 256),
+params = {'dim': (110, 110, 110),
           'batch_size': 4,
           'n_classes': 2,
           'n_channels': 1,
@@ -150,7 +150,7 @@ cn_test_files = cn_test_files[0:50]
 def get_images(files):
     return_list = []
     for file in files:
-        nifti_data = np.reshape(np.asarray(nibabel.load(file).get_fdata()), (176, 256, 256, 1))
+        nifti_data = np.reshape(np.asarray(nibabel.load(file).get_fdata()), (110, 110, 110, 1))
         return_list.append(nifti_data)
     return return_list
 
