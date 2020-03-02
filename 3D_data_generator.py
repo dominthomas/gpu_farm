@@ -128,8 +128,8 @@ params = {'dim': (176, 256, 256),
           'shuffle': True}
 training_generator = DataGenerator(partition['train'], labels, **params)
 validation_generator = DataGenerator(partition['validation'], labels, **params)
-model.fit(generator=training_generator,
-          validation_generator=validation_generator,
+model.fit(training_generator,
+          validation_generator,
           use_multiprocessing=True,
           workers=5,
           epochs=200)
