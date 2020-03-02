@@ -1,8 +1,7 @@
-import tensorflow.keras
 import nibabel
 import numpy as np
 
-class DataGenerator(keras.utils.Sequence):
+class DataGenerator(K.utils.Sequence):
 
     def __init__(self, list_IDs, labels, batch_size=5, dim=(176, 256, 256), n_channels=1,
                  n_classes=10, shuffle=True):
@@ -36,7 +35,7 @@ class DataGenerator(keras.utils.Sequence):
             # Store class
             y[i] = self.labels[ID]
 
-        return X, keras.utils.to_categorical(y, num_classes=self.n_classes)
+        return X, K.utils.to_categorical(y, num_classes=self.n_classes)
 
     def __len__(self):
         """Denotes the number of batches per epoch"""
