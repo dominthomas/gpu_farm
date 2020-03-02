@@ -126,15 +126,15 @@ with tf.device("/cpu:0"):
         model.add(Dropout(0.7))
         model.add(Dense(256, activation='relu'))
         model.add(Dropout(0.7))
-        model.add(Dense(1, activation='sigmoid'))
+        model.add(Dense(2, activation='softmax'))
 
-model.compile(loss=tf.keras.losses.binary_crossentropy,
+model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 
 ########################################################################################
 
-model.fit_generator(batch_of_images[0], batch_of_images[1], epochs=50)
+model.fit(batch_of_images[0], batch_of_images[1], epochs=50)
 
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
