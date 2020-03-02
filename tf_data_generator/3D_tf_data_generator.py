@@ -63,7 +63,7 @@ def load_image(file, label):
 
 
 def load_image_wrapper(file, labels):
-    return tf.py_function(load_image, [file, labels], [tf.float64])
+    return tf.py_function(load_image, [file, labels], [tf.float64, tf.int64])
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
