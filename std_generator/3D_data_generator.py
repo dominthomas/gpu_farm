@@ -1,19 +1,12 @@
 import numpy as np
 import nibabel
 import tensorflow as tf
-from tensorflow.keras.utils import Sequence
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Flatten, Conv3D, MaxPooling3D
-from tensorflow.keras.layers import BatchNormalization
-from tensorflow.keras.layers import Activation
+from tensorflow.keras.layers import Conv3D, MaxPooling3D
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
-from tensorflow.keras.layers import Input
-from tensorflow.keras.models import Model
 from tensorflow.keras import backend as K
-from tensorflow.keras.utils import multi_gpu_model
-from data_helper import DataGenerator
+from std_generator.data_helper import DataGenerator
 import os
 import gc
 import random

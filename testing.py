@@ -2,10 +2,10 @@ import numpy as np
 import random
 
 random_list = ["asdf1", "asdf2", "asdf3", "asdf4", "asdf5"]
-random_labels = [1, 1, 1, 1, 1]
+random_labels = [1, 2, 1, 2, 1]
 
 random_list2 = ["bob1", "bob2", "bob3", "bob4", "bob5"]
-random_labels2 = [0, 0, 0, 0, 0]
+random_labels2 = {'first': 0, 'second': 2, 'third': 0, 'fourth': 2, 'fifth': 0}
 
 random.Random(129).shuffle(random_list)
 random.Random(129).shuffle(random_labels)
@@ -24,9 +24,9 @@ random_list_labels = {}
 for item in random_list:
     random_list_labels[item] = 1
 
+random.Random(129).shuffle(random_labels)
+random.Random(129).shuffle(random_labels2)
 
-asdf = random_labels + random_labels2
 
-random.Random(129).shuffle(asdf)
-print(asdf)
-
+print(random_labels)
+print(random_labels2)
