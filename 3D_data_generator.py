@@ -134,6 +134,8 @@ training_generator = DataGenerator(partition['train'], labels, **params)
 validation_generator = DataGenerator(partition['validation'], labels, **params)
 model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
+                    use_multiprocessing=True,
+                    workers=4,
                     epochs=2)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
