@@ -58,7 +58,7 @@ def load_image(file, label):
     return nifti, label
 
 
-dataset = tf.data.Dataset.list_files((train, labels))
+dataset = tf.data.Dataset.TextLineDataset((train, labels))
 dataset = dataset.map(load_image, num_parallel_calls=6)
 dataset = dataset.batch(6)
 dataset = dataset.prefetch(buffer_size=6)
