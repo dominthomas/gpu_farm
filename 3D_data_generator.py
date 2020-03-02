@@ -39,7 +39,7 @@ sub_id_cn = []
 """Down-sampling CN to 278 MRIs"""
 random.Random(129).shuffle(ad_files)
 random.Random(129).shuffle(cn_files)
-cn_files = cn_files[0:601]
+cn_files = cn_files[0:602]
 
 """Split files for training and validation"""
 ad_train = ad_files[0:276]
