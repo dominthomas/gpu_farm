@@ -133,8 +133,8 @@ model.fit_generator(generator=training_generator,
                     epochs=2)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
-ad_test_files = os.listdir("/home/k1651915/ADNI/3D/AD/")
-cn_test_files = os.listdir("/home/k1651915/ADNI/3D/CN/")
+ad_test_files = os.listdir("/home/k1651915/ADNI/3D/ADNI_AD/")
+cn_test_files = os.listdir("/home/k1651915/ADNI/3D/ADNI_CN/")
 random.Random(921).shuffle(ad_test_files)
 random.Random(921).shuffle(cn_test_files)
 ad_test_files = ad_test_files[0:50]
