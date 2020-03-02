@@ -62,7 +62,7 @@ def load_image(file, label):
     return nifti, label
 
 
-@tf.autograph.do_not_convert
+@tf.autograph.experimental.do_not_convert
 def load_image_wrapper(file, labels):
     return tf.py_function(load_image, [file, labels], [tf.float64])
 
