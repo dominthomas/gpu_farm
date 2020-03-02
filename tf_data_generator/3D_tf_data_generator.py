@@ -128,7 +128,7 @@ with tf.device("/cpu:0"):
         model.add(Dropout(0.7))
         model.add(Dense(2, activation='softmax'))
 
-model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy,
+model.compile(loss=tf.keras.losses.categorical_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 
@@ -166,11 +166,11 @@ ad_test = np.asarray(get_images(ad_test_files))
 os.chdir("/home/k1651915/ADNI/3D/resized_cn/")
 cn_test = np.asarray(get_images(cn_test_files))
 
-#ad_test_labels = tf.keras.utils.to_categorical(np.ones(test_size), 2)
-#cn_test_labels = tf.keras.utils.to_categorical(np.zeros(test_size), 2)
+ad_test_labels = tf.keras.utils.to_categorical(np.ones(test_size), 2)
+cn_test_labels = tf.keras.utils.to_categorical(np.zeros(test_size), 2)
 
-ad_test_labels = np.ones(test_size), 2
-cn_test_labels = np.zeros(test_size), 2
+#ad_test_labels = np.ones(test_size), 2
+#cn_test_labels = np.zeros(test_size), 2
 
 evaluation_ad = model.evaluate(ad_test, ad_test_labels, verbose=0)
 evaluation_cn = model.evaluate(cn_test, cn_test_labels, verbose=0)
