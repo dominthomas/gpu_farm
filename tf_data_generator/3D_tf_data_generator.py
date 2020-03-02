@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import numpy as np
 import nibabel
 import tensorflow as tf
@@ -12,7 +10,7 @@ import os
 import gc
 import random
 
-tf.compat.v1.reset_default_graph()
+#tf.compat.v1.reset_default_graph()
 """@author Domin Thomas"""
 """Make sure that the working directory for this python script is in the '/home/k1651915/OASIS/3D/all/' , 
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
