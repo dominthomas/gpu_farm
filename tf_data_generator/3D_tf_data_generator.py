@@ -33,25 +33,15 @@ random.Random(129).shuffle(ad_files)
 random.Random(129).shuffle(cn_files)
 cn_files = cn_files[0:277]
 
-"""Split files for training and validation"""
-ad_train = ad_files[0:275]
-cn_train = cn_files[0:275]
-
-"""There is a chance subject bias could alter validation accuracy, but I don't care about this atm"""
-"""TODO: In future, use samples from ADNI DataSet to account for Subject bias"""
-ad_validation = ad_files[276:277]
-cn_validation = cn_files[276:277]
+"""Split files for training"""
+ad_train = ad_files[0:277]
+cn_train = cn_files[0:277]
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
+labels = np.ones(len(ad_files)) + np.zeros(len(cn_files))
 random.Random(129).shuffle(train)
-labels = {}
-for item in train:
-    if item in ad_train:
-        labels[item] = 1
-    else:
-        labels[item] = 0
-
+random.Random(129).shuffle(labels)
 """Create tf data pipeline"""
 
 
@@ -62,13 +52,11 @@ def load_image(file, labels):
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
-
-    label = K.utils.to_categorical(labels[file], 2)
-    return nifti, label
+    return nifti, labels
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
-dataset = dataset.map(load_image, num_parallel_calls=8)
+dataset = dataset.map(load_image, num_parallel_calls=6)
 dataset = dataset.batch(6)
 dataset = dataset.prefetch(buffer_size=6)
 iterator = dataset.make_initializable_iterator()
