@@ -32,7 +32,6 @@ class DataGenerator(K.utils.Sequence):
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
-            print(ID)
             X[i,] = np.reshape(np.asarray(nibabel.load(ID).get_fdata()), (176, 256, 256, 1))
 
             # Store class

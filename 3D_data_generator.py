@@ -68,7 +68,7 @@ with tf.device("/cpu:0"):
                          input_shape=(176, 256, 256, 1),
                          data_format='channels_last',
                          kernel_size=(7, 7, 7),
-                         strides=(2, 2, 2),
+                         strides=(4, 4, 4),
                          padding='valid',
                          activation='relu'))
 
