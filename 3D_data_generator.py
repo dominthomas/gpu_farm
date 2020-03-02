@@ -133,8 +133,8 @@ model.fit_generator(generator=training_generator,
                     epochs=2)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
-ad_test_files = os.listdir("/home/k1651915/ADNI/3D/ADNI_AD/")
-cn_test_files = os.listdir("/home/k1651915/ADNI/3D/ADNI_CN/")
+ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
+cn_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_cn/")
 random.Random(921).shuffle(ad_test_files)
 random.Random(921).shuffle(cn_test_files)
 ad_test_files = ad_test_files[0:50]
@@ -151,9 +151,9 @@ def get_images(files):
     return return_list
 
 
-os.chdir("/home/k1651915/ADNI/3D/ADNI_AD/")
+os.chdir("/home/k1651915/ADNI/3D/resized_ad/")
 ad_test = np.asarray(get_images(ad_test_files))
-os.chdir("/home/k1651915/ADNI/3D/ADNI_CN/")
+os.chdir("/home/k1651915/ADNI/3D/resized_cn/")
 cn_test = np.asrray(get_images(cn_test_files))
 
 # test = np.asarray(ad_test + cn_test)
