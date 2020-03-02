@@ -60,7 +60,7 @@ def load_image(file, label):
     return nifti, label
 
 
-dataset = tf.data.Dataset.from_tensor_slices((train, labels))
+dataset = tf.data.Dataset.from_tensor_slices((train, labels)).map(lambda name: tf.py_func(load_image, [name], tf.int32))
 dataset = dataset.map(load_image, num_parallel_calls=6)
 dataset = dataset.batch(6)
 dataset = dataset.prefetch(buffer_size=6)
