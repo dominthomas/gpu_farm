@@ -61,7 +61,8 @@ def load_image(file, label):
     nifti = tf.convert_to_tensor(nifti, np.float64)
     return nifti, label
 
-@
+
+@tf.autograph.do_not_convert
 def load_image_wrapper(file, labels):
     return tf.py_function(load_image, [file, labels], [tf.float64])
 
@@ -136,7 +137,6 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 model.fit(batch_of_images[0], batch_of_images[1], epochs=50, steps_per_epoch=28)
 
-
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 test_size = 5
 ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
@@ -169,8 +169,8 @@ cn_test = np.asarray(get_images(cn_test_files))
 ad_test_labels = tf.keras.utils.to_categorical(np.ones(test_size), 2)
 cn_test_labels = tf.keras.utils.to_categorical(np.zeros(test_size), 2)
 
-#ad_test_labels = np.ones(test_size), 2
-#cn_test_labels = np.zeros(test_size), 2
+# ad_test_labels = np.ones(test_size), 2
+# cn_test_labels = np.zeros(test_size), 2
 
 evaluation_ad = model.evaluate(ad_test, ad_test_labels, verbose=0)
 evaluation_cn = model.evaluate(cn_test, cn_test_labels, verbose=0)
