@@ -51,7 +51,7 @@ print(len(labels))
 
 def load_image(file, label):
     print(file.decode('utf-8'))
-    nifti = np.asarray(nibabel.load(file.decode('utf-8')).get_fdata())
+    nifti = np.asarray(nibabel.load(file.numpy().decode('utf-8')).get_fdata())
 
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
