@@ -153,7 +153,7 @@ def get_images(files):
         nifti_data = np.asarray(nibabel.load(file).get_fdata())
         xs, ys, zs = np.where(nifti_data != 0)
         nifti_data = nifti_data[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
-        nifti_data = nifti_data[0:109, 0:109, 0:109]
+        nifti_data = nifti_data[0:110, 0:110, 0:110]
         nifti_data = np.reshape(nifti_data, (110, 110, 110, 1))
         return_list.append(nifti_data)
     return return_list
