@@ -36,8 +36,8 @@ class DataGenerator(K.utils.Sequence):
             nifti = np.asarray(nibabel.load(ID).get_fdata())
             xs, ys, zs = np.where(nifti != 0)
             nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
-            nifti = nifti[0:110, 0:110, 0:110]
-            X[i,] = np.reshape(nifti, (110, 110, 110, 1))
+            nifti = nifti[0:100, 0:100, 0:100]
+            X[i,] = np.reshape(nifti, (100, 100, 100, 1))
 
             # Store class
             y[i] = self.labels[ID]

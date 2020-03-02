@@ -42,13 +42,13 @@ random.Random(129).shuffle(cn_files)
 cn_files = cn_files[0:277]
 
 """Split files for training and validation"""
-ad_train = ad_files[0:2]
-cn_train = cn_files[0:2]
+ad_train = ad_files[0:275]
+cn_train = cn_files[0:275]
 
 """There is a chance subject bias could alter validation accuracy, but I don't care about this atm"""
 """TODO: In future, use samples from ADNI DataSet to account for Subject bias"""
 ad_validation = ad_files[276:277]
-cn_validation = cn_files[267:277]
+cn_validation = cn_files[276:277]
 
 """Shuffle Train set"""
 train = ad_train + cn_train
@@ -69,7 +69,7 @@ with tf.device("/cpu:0"):
         model = tf.keras.Sequential()
 
         model.add(Conv3D(64,
-                         input_shape=(110, 110, 110, 1),
+                         input_shape=(100, 100, 100, 1),
                          data_format='channels_last',
                          kernel_size=(7, 7, 7),
                          strides=(2, 2, 2),
@@ -125,7 +125,7 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
-params = {'dim': (110, 110, 110),
+params = {'dim': (100, 100, 100),
           'batch_size': 4,
           'n_classes': 2,
           'n_channels': 1,
@@ -155,8 +155,8 @@ def get_images(files):
         nifti_data = np.asarray(nibabel.load(file).get_fdata())
         xs, ys, zs = np.where(nifti_data != 0)
         nifti_data = nifti_data[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
-        nifti_data = nifti_data[0:110, 0:110, 0:110]
-        nifti_data = np.reshape(nifti_data, (110, 110, 110, 1))
+        nifti_data = nifti_data[0:100, 0:100, 0:100]
+        nifti_data = np.reshape(nifti_data, (100, 100, 100, 1))
         return_list.append(nifti_data)
     return return_list
 
