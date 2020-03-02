@@ -36,8 +36,12 @@ random.Random(129).shuffle(ad_files)
 random.Random(129).shuffle(cn_files)
 
 """Split files for training"""
-ad_train = ad_files[0:277]
-cn_train = cn_files[0:277]
+ad_train = ad_files[0:275]
+cn_train = cn_files[0:275]
+
+ad_validate = ad_files[276:277]
+cn_validate = cn_files[276:277]
+validation_labels = np.concatenate((np.ones(len(ad_validate)), np.zeros(len(cn_validate))), axis=None)
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
@@ -50,8 +54,6 @@ print(len(labels))
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
 
-"""Create tf data pipeline"""
-
 
 def get_images(files):
     return_list = []
@@ -63,6 +65,13 @@ def get_images(files):
         nifti_data = np.reshape(nifti_data, (100, 100, 100, 1))
         return_list.append(nifti_data)
     return return_list
+
+
+validation_data = get_images(ad_validate)
+validation_data = np.asarray(validation_data + get_images(cn_validate))
+
+"""Create tf data pipeline"""
+
 
 def load_image(file, label):
     nifti = np.asarray(nibabel.load(file.numpy().decode('utf-8')).get_fdata())
@@ -147,8 +156,9 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 ########################################################################################
 
-model.fit(generator=batch_of_images, epochs=10)
-
+model.fit_generator(batch_of_images,
+                    validation_data=(validation_data, validation_labels),
+                    epochs=10)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
