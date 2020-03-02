@@ -6,7 +6,7 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras import backend as K
-from std_generator.data_helper import DataGenerator
+from data_helper import DataGenerator
 import os
 import gc
 import random
