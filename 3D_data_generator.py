@@ -152,9 +152,9 @@ def get_images(files):
     return return_list
 
 
-os.chdir("/home/k1651915/ADNI/3D/AD/")
+os.chdir("/home/k1651915/ADNI/3D/ADNI_AD/")
 ad_test = np.asarray(get_images(ad_test_files))
-os.chdir("/home/k1651915/ADNI/3D/CN/")
+os.chdir("/home/k1651915/ADNI/3D/ADNI_CN/")
 cn_test = np.asrray(get_images(cn_test_files))
 
 # test = np.asarray(ad_test + cn_test)
