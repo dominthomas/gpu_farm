@@ -36,8 +36,8 @@ random.Random(129).shuffle(cn_files)
 ad_train = ad_files[0:277]
 cn_train = cn_files[0:277]
 
-print(len(ad_files))
-print(len(cn_files))
+print(len(ad_train))
+print(len(cn_train))
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
