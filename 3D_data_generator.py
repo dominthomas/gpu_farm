@@ -137,8 +137,8 @@ ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
 cn_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_cn/")
 random.Random(921).shuffle(ad_test_files)
 random.Random(921).shuffle(cn_test_files)
-ad_test_files = ad_test_files[0:50]
-cn_test_files = cn_test_files[0:50]
+ad_test_files = ad_test_files[0:5]
+cn_test_files = cn_test_files[0:5]
 
 """Function to load 3D-MRI voxels"""
 
@@ -157,8 +157,8 @@ os.chdir("/home/k1651915/ADNI/3D/resized_cn/")
 cn_test = np.asrray(get_images(cn_test_files))
 
 # test = np.asarray(ad_test + cn_test)
-ad_test_labels = [np.ones(50), [2]]
-cn_test_labels = [np.zeros(50), [2]]
+ad_test_labels = [np.ones(5), [2]]
+cn_test_labels = [np.zeros(5), [2]]
 
 evaluation_ad = model.evaluate(ad_test, ad_test_labels, verbose=0)
 evaluation_cn = model.evaluate(cn_test, cn_test_labels, verbose=0)
