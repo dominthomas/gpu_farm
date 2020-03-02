@@ -12,7 +12,7 @@ import os
 import gc
 import random
 
-tf.compat.v1.reset_default_graph()
+# tf.compat.v1.reset_default_graph()
 """@author Domin Thomas"""
 """Make sure that the working directory for this python script is in the '/home/k1651915/OASIS/3D/all/' , 
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
@@ -147,16 +147,17 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 ########################################################################################
 
-model.fit(batch_of_images[0], batch_of_images[1], batch_size=10, epochs=10)
+model.fit(batch_of_images[0], batch_of_images[1], epochs=10)
 
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
+test_size = 5
 ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
 cn_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_cn/")
 random.Random(921).shuffle(ad_test_files)
 random.Random(921).shuffle(cn_test_files)
-ad_test_files = ad_test_files[0:50]
-cn_test_files = cn_test_files[0:50]
+ad_test_files = ad_test_files[0:test_size]
+cn_test_files = cn_test_files[0:test_size]
 
 """Function to load 3D-MRI voxels"""
 
@@ -178,8 +179,8 @@ ad_test = np.asarray(get_images(ad_test_files))
 os.chdir("/home/k1651915/ADNI/3D/resized_cn/")
 cn_test = np.asarray(get_images(cn_test_files))
 
-ad_test_labels = tf.keras.utils.to_categorical(np.ones(50), 2)
-cn_test_labels = tf.keras.utils.to_categorical(np.zeros(50), 2)
+ad_test_labels = tf.keras.utils.to_categorical(np.ones(test_size), 2)
+cn_test_labels = tf.keras.utils.to_categorical(np.zeros(test_size), 2)
 
 evaluation_ad = model.evaluate(ad_test, ad_test_labels, verbose=0)
 evaluation_cn = model.evaluate(cn_test, cn_test_labels, verbose=0)
