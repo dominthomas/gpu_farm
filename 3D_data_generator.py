@@ -157,8 +157,8 @@ os.chdir("/home/k1651915/ADNI/3D/resized_cn/")
 cn_test = np.asarray(get_images(cn_test_files))
 
 # test = np.asarray(ad_test + cn_test)
-ad_test_labels = tf.keras.utils.to_categorical([np.ones(5), [2]])
-cn_test_labels = tf.keras.utils.to_categorical([np.zeros(5), [2]])
+ad_test_labels = tf.keras.utils.to_categorical(np.ones(5), 2)
+cn_test_labels = tf.keras.utils.to_categorical(np.zeros(5), 2)
 
 evaluation_ad = model.evaluate(ad_test, ad_test_labels, verbose=0)
 evaluation_cn = model.evaluate(cn_test, cn_test_labels, verbose=0)
