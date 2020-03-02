@@ -50,6 +50,7 @@ print(len(labels))
 
 
 def load_image(file, label):
+    print(file.decode('utf-8'))
     nifti = np.asarray(nibabel.load(file.decode('utf-8')).get_fdata())
 
     xs, ys, zs = np.where(nifti != 0)
@@ -61,8 +62,7 @@ def load_image(file, label):
 
 
 def load_image_wrapper(file, labels):
-   file = tf.py_function(load_image, [file, labels], (tf.string, tf.int32))
-   return file
+    return tf.py_function(load_image, [file, labels], [tf.float32, tf.float32])
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
