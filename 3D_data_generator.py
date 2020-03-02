@@ -122,7 +122,7 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
 params = {'dim': (176, 256, 256),
-          'batch_size': 5,
+          'batch_size': 10,
           'n_classes': 2,
           'n_channels': 1,
           'shuffle': True}
@@ -130,8 +130,6 @@ training_generator = DataGenerator(partition['train'], labels, **params)
 validation_generator = DataGenerator(partition['validation'], labels, **params)
 model.fit_generator(generator=training_generator,
                     validation_data=validation_generator,
-                    use_multiprocessing=True,
-                    workers=5,
                     epochs=2)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
