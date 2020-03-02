@@ -42,13 +42,13 @@ random.Random(129).shuffle(cn_files)
 cn_files = cn_files[0:277]
 
 """Split files for training and validation"""
-ad_train = ad_files[0:276]
-cn_train = cn_files[0:276]
+ad_train = ad_files[0:275]
+cn_train = cn_files[0:275]
 
 """There is a chance subject bias could alter validation accuracy, but I don't care about this atm"""
 """TODO: In future, use samples from ADNI DataSet to account for Subject bias"""
-ad_validation = ad_files[277]
-cn_validation = cn_files[277]
+ad_validation = ad_files[276:277]
+cn_validation = cn_files[267:277]
 
 """Shuffle Train set"""
 train = ad_train + cn_train
