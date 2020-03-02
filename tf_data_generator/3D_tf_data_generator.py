@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import nibabel
 import tensorflow as tf
@@ -48,7 +50,7 @@ print(len(labels))
 
 
 def load_image(file, label):
-    nifti = np.asarray(nibabel.load(tf.cast(file, np.float32)).get_fdata())
+    nifti = np.asarray(nibabel.load(Path(file)).get_fdata())
 
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
