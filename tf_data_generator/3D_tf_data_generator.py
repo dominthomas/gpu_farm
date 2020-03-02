@@ -59,12 +59,12 @@ def load_image(file, label):
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
-    nifti = tf.convert_to_tensor(nifti, np.float32)
+    nifti = tf.convert_to_tensor(nifti, np.float64)
     return nifti, label
 
 
 def load_image_wrapper(file, labels):
-    return tf.py_function(load_image, [file, labels], [tf.float32, tf.float32])
+    return tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
