@@ -46,6 +46,9 @@ random.Random(129).shuffle(labels)
 print(len(train))
 print(len(labels))
 
+"""Change working directory to OASIS/3D/all/"""
+os.chdir("/home/k1651915/OASIS/3D/all/")
+
 """Create tf data pipeline"""
 
 
@@ -132,8 +135,6 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 ########################################################################################
 
-"""Change working directory to OASIS/3D/all/"""
-os.chdir("/home/k1651915/OASIS/3D/all/")
 model.fit(batch_of_images,
           epochs=2)
 
