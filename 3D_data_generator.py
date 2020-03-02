@@ -69,7 +69,7 @@ with tf.device("/cpu:0"):
         model = tf.keras.Sequential()
 
         model.add(Conv3D(64,
-                         input_shape=(176, 256, 256, 1),
+                         input_shape=(110, 110, 100, 1),
                          data_format='channels_last',
                          kernel_size=(7, 7, 7),
                          strides=(2, 2, 2),
@@ -150,7 +150,11 @@ cn_test_files = cn_test_files[0:50]
 def get_images(files):
     return_list = []
     for file in files:
-        nifti_data = np.reshape(np.asarray(nibabel.load(file).get_fdata()), (110, 110, 110, 1))
+        nifti_data = np.asarray(nibabel.load(file).get_fdata())
+        xs, ys, zs = np.where(nifti_data != 0)
+        nifti_data = nifti_data[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
+        nifti_data = nifti_data[0:109, 0:109, 0:109]
+        nifti_data = np.reshape(nifti_data, (110, 110, 110, 1))
         return_list.append(nifti_data)
     return return_list
 
