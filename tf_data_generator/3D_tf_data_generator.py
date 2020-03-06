@@ -1,6 +1,10 @@
 import numpy as np
 import nibabel
 import tensorflow as tf
+from tensorflow.keras.layers import Conv3D, MaxPooling3D
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dropout
+from tensorflow.keras.layers import Flatten
 import os
 import gc
 import random
@@ -182,5 +186,5 @@ with open("/home/k1651915/3.txt", "a") as f:
     f.write("%s\n" % evaluation_cn[1])
     f.write("%s\n" % "========")
 
-K.clear_session()
+# K.clear_session()
 gc.collect()
