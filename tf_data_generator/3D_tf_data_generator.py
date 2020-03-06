@@ -65,12 +65,12 @@ def load_image(file, label):
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     nifti = tf.convert_to_tensor(nifti, tf.float64)
     nifti = tf.cast(nifti, tf.float32)
-    return nifti, labels.astype(np.float32)
+    return nifti, tf.cast(label, tf.float32)
 
 
 @tf.autograph.experimental.do_not_convert
 def load_image_wrapper(file, labels):
-    return tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
+    return tf.py_function(load_image, [file, labels], [tf.float64, tf.float32])
 
 
 def train_input():
