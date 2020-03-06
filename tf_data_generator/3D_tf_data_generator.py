@@ -75,7 +75,11 @@ dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
 dataset = dataset.batch(6)
 dataset = dataset.prefetch(buffer_size=1)
 iterator = iter(dataset)
-batch_of_images = (iterator.get_next())
+
+
+def get_batch():
+    batch = iterator.get_next()
+    return batch[0], batch[1]
 
 
 ########################################################################################
@@ -140,7 +144,7 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
 
 ########################################################################################
 ########################################################################################
-model.fit(batch_of_images, steps_per_epoch=90, epochs=50)
+model.fit(get_batch(), steps_per_epoch=90, epochs=50)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 test_size = 5
