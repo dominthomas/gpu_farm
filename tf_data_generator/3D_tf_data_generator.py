@@ -1,19 +1,18 @@
 import numpy as np
 import nibabel
 import tensorflow as tf
-from tensorflow.keras.layers import Conv3D, MaxPooling3D
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Dropout
-from tensorflow.keras.layers import Flatten
-from tensorflow.keras import backend as K
 import os
 import gc
 import random
 
-# tf.compat.v1.reset_default_graph()
 """@author Domin Thomas"""
 """Make sure that the working directory for this python script is in the '/home/k1651915/OASIS/3D/all/' , 
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
+
+# tf.compat.v1.reset_default_graph()
+
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
 
 """Configure GPUs to prevent OOM errors"""
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -68,8 +67,8 @@ def load_image_wrapper(file, labels):
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
-dataset = dataset.map(load_image_wrapper, num_parallel_calls=10)
-dataset = dataset.batch(10)
+dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
+dataset = dataset.batch(6)
 dataset = dataset.prefetch(buffer_size=1)
 iterator = iter(dataset)
 batch_of_images = iterator.get_next()
@@ -134,8 +133,9 @@ model.compile(loss=tf.keras.losses.categorical_crossentropy,
               metrics=['accuracy'])
 
 ########################################################################################
+########################################################################################
 
-model.fit(batch_of_images[0], batch_of_images[1], steps_per_epoch=5, epochs=50)
+model.fit(train=(batch_of_images[0], batch_of_images[1]), steps_per_epoch=92, epochs=50)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 test_size = 5
