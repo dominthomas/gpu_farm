@@ -136,7 +136,7 @@ def cnn_model(features, labels, mode, params):
             net = Dense(1, activation='sigmoid')
 
             logits = net
-            y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits)
+            y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
             y_pred = tf.identity(y_pred, name="output_pred")
             y_pred_cls = tf.argmax(y_pred, axis=1)
             y_pred_cls = tf.identity(y_pred_cls, name="output_cls")
