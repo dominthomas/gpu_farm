@@ -64,7 +64,6 @@ def load_image(file, label):
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     nifti = tf.convert_to_tensor(nifti, tf.float64)
-    label = tf.convert_to_tensor(label, tf.float32)
     return nifti, label
 
 
@@ -161,7 +160,7 @@ class CNN_Model(Model):
 def model_fn(features, labels, mode, params):
     m = CNN_Model()
     logits = CNN_Model.cnn_model(m, features)
-    labels = tf.cast(labels, tf.int32)
+    labels = tf.cast(labels, tf.float32)
     y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
     y_pred = tf.identity(y_pred, name="output_pred")
     y_pred_cls = tf.argmax(y_pred, axis=1)
