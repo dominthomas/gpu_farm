@@ -14,7 +14,6 @@ import random
 """Make sure that the working directory for this python script is in the '/home/k1651915/OASIS/3D/all/' , 
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
 
-tf.keras.backend.set_floatx('float64')
 # tf.compat.v1.reset_default_graph()
 # sess = tf.Session()
 # sess.run(tf.global_variables_initializer())
@@ -68,7 +67,7 @@ def load_image(file, label):
 
 @tf.autograph.experimental.do_not_convert
 def load_image_wrapper(file, labels):
-    return tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
+    return tf.py_function(load_image, [file, labels], [tf.float32, tf.float32])
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
@@ -80,59 +79,58 @@ batch_of_images = iterator.get_next()
 
 
 ########################################################################################
-class Model(Model):
-    with tf.device("/cpu:0"):
-        with tf.device("/gpu:0"):
-            model = tf.keras.Sequential()
+with tf.device("/cpu:0"):
+    with tf.device("/gpu:0"):
+        model = tf.keras.Sequential()
 
-            model.add(Conv3D(64,
-                             input_shape=(100, 100, 100, 1),
-                             data_format='channels_last',
-                             kernel_size=(7, 7, 7),
-                             strides=(2, 2, 2),
-                             padding='valid',
-                             activation='relu'))
+        model.add(Conv3D(64,
+                         input_shape=(100, 100, 100, 1),
+                         data_format='channels_last',
+                         kernel_size=(7, 7, 7),
+                         strides=(2, 2, 2),
+                         padding='valid',
+                         activation='relu'))
 
-        with tf.device("/gpu:1"):
-            model.add(Conv3D(64,
-                             kernel_size=(3, 3, 3),
-                             padding='valid',
-                             activation='relu'))
+    with tf.device("/gpu:1"):
+        model.add(Conv3D(64,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu'))
 
-        with tf.device("/gpu:2"):
-            model.add(Conv3D(128,
-                             kernel_size=(3, 3, 3),
-                             padding='valid',
-                             activation='relu'))
+    with tf.device("/gpu:2"):
+        model.add(Conv3D(128,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu'))
 
-            model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                                   padding='valid'))
+        model.add(MaxPooling3D(pool_size=(2, 2, 2),
+                               padding='valid'))
 
-        with tf.device("/gpu:3"):
-            model.add(Conv3D(128,
-                             kernel_size=(3, 3, 3),
-                             padding='valid',
-                             activation='relu'))
+    with tf.device("/gpu:3"):
+        model.add(Conv3D(128,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu'))
 
-            model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                                   padding='valid'))
+        model.add(MaxPooling3D(pool_size=(2, 2, 2),
+                               padding='valid'))
 
-        with tf.device("/gpu:4"):
-            model.add(Conv3D(128,
-                             kernel_size=(3, 3, 3),
-                             padding='valid',
-                             activation='relu'))
+    with tf.device("/gpu:4"):
+        model.add(Conv3D(128,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu'))
 
-            model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                                   padding='valid'))
+        model.add(MaxPooling3D(pool_size=(2, 2, 2),
+                               padding='valid'))
 
-            model.add(Flatten())
+        model.add(Flatten())
 
-            model.add(Dense(256, activation='relu'))
-            model.add(Dropout(0.7))
-            model.add(Dense(256, activation='relu'))
-            model.add(Dropout(0.7))
-            model.add(Dense(2, activation='softmax'))
+        model.add(Dense(256, activation='relu'))
+        model.add(Dropout(0.7))
+        model.add(Dense(256, activation='relu'))
+        model.add(Dropout(0.7))
+        model.add(Dense(2, activation='softmax'))
 
 
 model.compile(loss=tf.keras.losses.categorical_crossentropy,
