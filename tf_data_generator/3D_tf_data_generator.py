@@ -88,7 +88,7 @@ def cnn_model(features, labels, mode, params):
             net = features
             net = tf.identity(net, name="input_tensor")
 
-            net = Conv3D(net, filters=64,
+            net = Conv3D(net, 64,
                          input_shape=(100, 100, 100, 1),
                          data_format='channels_last',
                          kernel_size=(7, 7, 7),
@@ -97,13 +97,13 @@ def cnn_model(features, labels, mode, params):
                          activation='relu')
 
         with tf.device("/gpu:1"):
-            net = Conv3D(net, filters=64,
+            net = Conv3D(net, 64,
                          kernel_size=(3, 3, 3),
                          padding='valid',
                          activation='relu')
 
         with tf.device("/gpu:2"):
-            net = Conv3D(net, filters=128,
+            net = Conv3D(net, 128,
                          kernel_size=(3, 3, 3),
                          padding='valid',
                          activation='relu')
@@ -112,7 +112,7 @@ def cnn_model(features, labels, mode, params):
                                padding='valid')
 
         with tf.device("/gpu:3"):
-            net = Conv3D(net, filters=128,
+            net = Conv3D(net, 128,
                          kernel_size=(3, 3, 3),
                          padding='valid',
                          activation='relu')
@@ -121,7 +121,7 @@ def cnn_model(features, labels, mode, params):
                                padding='valid')
 
         with tf.device("/gpu:4"):
-            net = Conv3D(net, filters=128,
+            net = Conv3D(net, 128,
                          kernel_size=(3, 3, 3),
                          padding='valid',
                          activation='relu')
