@@ -185,7 +185,7 @@ def model_fn(images, labels, mode, params):
 
 
 ########################################################################################
-model = tf.estimator.Estimator(model_fn=CNN_Model.model_fn,
+model = tf.estimator.Estimator(model_fn=model_fn,
                                params={"learning_rate": 1e-4},
                                model_dir="./model5/")
 ########################################################################################
