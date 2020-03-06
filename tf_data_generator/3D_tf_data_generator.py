@@ -64,7 +64,7 @@ def load_image(file, label):
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     nifti = tf.convert_to_tensor(nifti, np.float64)
-    return {'nifti': nifti}, label
+    return nifti, label
 
 
 @tf.autograph.experimental.do_not_convert
@@ -136,8 +136,7 @@ class CNN_Model(Model):
                     self.dense3 = Dense(2, activation='softmax')
 
         def cnn_model(self, features):
-            x = features["nifti"]
-            x = tf.identity(x, name="input_tensor")
+            x = tf.identity(features, name="input_tensor")
             x = self.conv1(x, name="layer_conv1")
             x = self.conv2(x, name="layer_conv2")
             x = self.conv3(x, name="layer_conv3")
