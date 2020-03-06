@@ -73,17 +73,9 @@ def load_image_wrapper(file, labels):
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
-dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
-dataset = dataset.batch(6, drop_remainder=True).repeat()
-dataset = dataset.prefetch(buffer_size=1)
-
-
-test = train[0:59]
-test_labels = labels[0:59]
-test_dataset = tf.data.Dataset.from_tensor_slices((test, test_labels))
-test_dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
-test_dataset = dataset.batch(6, drop_remainder=True).repeat()
-test_dataset = dataset.prefetch(buffer_size=1)
+dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
+dataset = dataset.batch(12, drop_remainder=True).repeat()
+dataset = dataset.prefetch(buffer_size=2)
 
 
 ########################################################################################
@@ -173,6 +165,7 @@ class CNN_Model(Model):
 
         @tf.function
         def train_step(self, images, labels):
+            print("Hi")
             with tf.GradientTape() as tape:
                 predictions = self.cnn_model(images)
                 loss = self.loss_object(labels, predictions)
@@ -195,7 +188,7 @@ class CNN_Model(Model):
             self.test_loss(t_loss)
             self.test_metric(labels, predictions)
 
-        def fit(self, train, test, epochs):
+        def fit(self, train, epochs):
             '''
                 This fit function runs training and testing.
             '''
@@ -203,15 +196,10 @@ class CNN_Model(Model):
                 for images, labels in train:
                     self.train_step(images, labels)
 
-                for test_images, test_labels in test:
-                    self.test_step(test_images, test_labels)
-
-                template = 'Epoch {}, Loss: {}, Accuracy: {}, Test Loss: {}, Test Accuracy: {}'
+                template = 'Epoch {}, Loss: {}, Accuracy: {}'
                 print(template.format(epoch + 1,
                                       self.train_loss.result(),
-                                      self.train_metric.result() * 100,
-                                      self.test_loss.result(),
-                                      self.test_metric.result() * 100))
+                                      self.train_metric.result() * 100))
 
                 # Reset the metrics for the next epoch
                 self.train_loss.reset_states()
@@ -246,7 +234,6 @@ model = CNN_Model(loss_object=loss_object,
 EPOCHS = 1
 
 model.fit(train=dataset,
-          test=test_dataset,
           epochs=EPOCHS)
 
 # model.fit(batch_images, batch_labels, steps_per_epoch=92, epochs=50)
