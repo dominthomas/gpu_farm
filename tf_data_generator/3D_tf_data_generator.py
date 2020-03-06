@@ -64,7 +64,7 @@ def load_image(file, label):
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     nifti = tf.convert_to_tensor(nifti, np.float64)
-    return nifti, label
+    return {'nifti': nifti}, label
 
 
 @tf.autograph.experimental.do_not_convert
@@ -77,7 +77,8 @@ def train_input():
     dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
     dataset = dataset.batch(12, drop_remainder=True).repeat()
     dataset = dataset.prefetch(buffer_size=2)
-    return dataset
+    iterator = iter(dataset)
+    return iterator.get_next()
 
 
 ########################################################################################
@@ -85,7 +86,6 @@ class CNN_Model(Model):
     with tf.device("/cpu:0"):
         def __init__(self):
             super(CNN_Model, self).__init__()
-
             with tf.device("/gpu:0"):
                 self.conv1 = Conv3D(64,
                                     input_shape=(100, 100, 100, 1),
@@ -137,9 +137,11 @@ class CNN_Model(Model):
                     self.dense3 = Dense(2, activation='softmax')
 
         def cnn_model(self, x):
-            x = self.conv1(x)
-            x = self.conv2(x)
-            x = self.conv3(x)
+            x = x['nifti']
+            x = tf.identity(x, name="input_tensor")
+            x = self.conv1(x, name="layer_conv1")
+            x = self.conv2(x, name="layer_conv2")
+            x = self.conv3(x, name="layer_conv3")
             x = self.maxPool1(x)
             x = self.conv4(x)
             x = self.maxPool2(x)
