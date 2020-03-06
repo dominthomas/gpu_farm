@@ -71,16 +71,14 @@ def load_image_wrapper(file, labels):
     return tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
 
 
-dataset = tf.data.Dataset.from_tensor_slices((train, labels))
-dataset = dataset.repeat()
-dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
-dataset = dataset.batch(6, drop_remainder=True)
-dataset = dataset.prefetch(buffer_size=4)
-iterator = iter(dataset)
-
-
 def train_input_fn():
-    return iterator.get_next()
+    dataset = tf.data.Dataset.from_tensor_slices((train, labels))
+    dataset = dataset.repeat()
+    dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
+    dataset = dataset.batch(6, drop_remainder=True)
+    dataset = dataset.prefetch(buffer_size=4)
+    # iterator = iter(dataset)
+    return dataset
 
 
 ########################################################################################
