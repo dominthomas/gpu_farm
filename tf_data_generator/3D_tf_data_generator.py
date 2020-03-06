@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Conv3D, MaxPooling3D
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
+from tensorflow.keras import Model
 import tempfile
 import random
 import sys
@@ -71,81 +72,174 @@ def load_image_wrapper(file, labels):
     return tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
 
 
-def train_input_fn():
-    dataset = tf.data.Dataset.from_tensor_slices((train, labels))
-    dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
-    dataset = dataset.batch(6, drop_remainder=True).repeat()
-    dataset = dataset.prefetch(buffer_size=4)
-    # iterator = iter(dataset)
-    return dataset
+dataset = tf.data.Dataset.from_tensor_slices((train, labels))
+dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
+dataset = dataset.batch(6, drop_remainder=True).repeat()
+dataset = dataset.prefetch(buffer_size=4)
 
 
 ########################################################################################
-with tf.device("/cpu:0"):
-    with tf.device("/gpu:0"):
-        model = tf.keras.Sequential()
+class CNN_Model(Model):
+    with tf.device("/cpu:0"):
+        def __init__(self,
+                     loss_object,
+                     optimizer,
+                     train_loss,
+                     train_metric,
+                     test_loss,
+                     test_metric):
+            super(CNN_Model, self).__init__()
 
-        model.add(Conv3D(64,
-                         input_shape=(100, 100, 100, 1),
-                         data_format='channels_last',
-                         kernel_size=(7, 7, 7),
-                         strides=(2, 2, 2),
-                         padding='valid',
-                         activation='relu'))
+            with tf.device("/gpu:0"):
+                self.conv1 = Conv3D(64,
+                                    input_shape=(100, 100, 100, 1),
+                                    data_format='channels_last',
+                                    kernel_size=(7, 7, 7),
+                                    strides=(2, 2, 2),
+                                    padding='valid',
+                                    activation='relu')
 
-    with tf.device("/gpu:1"):
-        model.add(Conv3D(64,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+                with tf.device("/gpu:1"):
+                    self.conv2 = Conv3D(64,
+                                        kernel_size=(3, 3, 3),
+                                        padding='valid',
+                                        activation='relu')
 
-    with tf.device("/gpu:2"):
-        model.add(Conv3D(128,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+                with tf.device("/gpu:2"):
+                    self.conv3 = Conv3D(128,
+                                        kernel_size=(3, 3, 3),
+                                        padding='valid',
+                                        activation='relu')
 
-        model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                               padding='valid'))
+                    self.maxPool1 = MaxPooling3D(pool_size=(2, 2, 2),
+                                                 padding='valid')
 
-    with tf.device("/gpu:3"):
-        model.add(Conv3D(128,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+                with tf.device("/gpu:3"):
+                    self.conv4 = Conv3D(128,
+                                        kernel_size=(3, 3, 3),
+                                        padding='valid',
+                                        activation='relu')
 
-        model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                               padding='valid'))
+                    self.maxPool2 = MaxPooling3D(pool_size=(2, 2, 2),
+                                                 padding='valid')
 
-    with tf.device("/gpu:4"):
-        model.add(Conv3D(128,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+                with tf.device("/gpu:4"):
+                    self.conv5 = Conv3D(128,
+                                        kernel_size=(3, 3, 3),
+                                        padding='valid',
+                                        activation='relu')
 
-        model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                               padding='valid'))
+                    self.maxPool3 = MaxPooling3D(pool_size=(2, 2, 2),
+                                                 padding='valid')
 
-        model.add(Flatten())
+                    self.flatten = Flatten()
 
-        model.add(Dense(256, activation='relu'))
-        model.add(Dropout(0.7))
-        model.add(Dense(256, activation='relu'))
-        model.add(Dropout(0.7))
-        model.add(Dense(1, activation='sigmoid'))
+                    self.dense1 = Dense(256, activation='relu')
+                    self.dropout1 = Dropout(0.7)
+                    self.dense2 = Dense(256, activation='relu')
+                    self.dropout2 = Dropout(0.7)
+                    self.dense3 = Dense(2, activation='softmax')
+
+                self.loss_object = loss_object
+                self.optimizer = optimizer
+                self.train_loss = train_loss
+                self.train_metric = train_metric
+                self.test_loss = test_loss
+                self.test_metric = test_metric
+
+        def cnn_model(self, x):
+            x = self.conv1(x)
+            x = self.conv2(x)
+            x = self.conv3(x)
+            x = self.maxPool1(x)
+            x = self.conv4(x)
+            x = self.maxPool2(x)
+            x = self.conv5(x)
+            x = self.maxPool3(x)
+            x = self.flatten(x)
+            x = self.dense1(x)
+            x = self.dropout1(x)
+            x = self.dense1(x)
+            x = self.dropout1(x)
+            return self.dense3(x)
+
+        @tf.function
+        def train_step(self, images, labels):
+            with tf.GradientTape() as tape:
+                predictions = self.nn_model(images)
+                loss = self.loss_object(labels, predictions)
+            gradients = tape.gradient(loss, self.trainable_variables)
+            self.optimizer.apply_gradients(zip(
+                gradients, self.trainable_variables))
+
+            self.train_loss(loss)
+            self.train_metric(labels, predictions)
+
+        @tf.function
+        def test_step(self, images, labels):
+            '''
+                This is a TensorFlow function, run once for each epoch for the
+                whole input.
+            '''
+            predictions = self.nn_model(images)
+            t_loss = self.loss_object(labels, predictions)
+
+            self.test_loss(t_loss)
+            self.test_metric(labels, predictions)
+
+        def fit(self, train, test, epochs):
+            '''
+                This fit function runs training and testing.
+            '''
+            for epoch in range(epochs):
+                for images, labels in train:
+                    self.train_step(images, labels)
+
+                for test_images, test_labels in test:
+                    self.test_step(test_images, test_labels)
+
+                template = 'Epoch {}, Loss: {}, Accuracy: {}, Test Loss: {}, Test Accuracy: {}'
+                print(template.format(epoch + 1,
+                                      self.train_loss.result(),
+                                      self.train_metric.result() * 100,
+                                      self.test_loss.result(),
+                                      self.test_metric.result() * 100))
+
+                # Reset the metrics for the next epoch
+                self.train_loss.reset_states()
+                self.train_metric.reset_states()
+                self.test_loss.reset_states()
+                self.test_metric.reset_states()
 
 
-model.compile(loss=tf.keras.losses.binary_crossentropy(from_logits=True),
-              optimizer=tf.keras.optimizers.Adagrad(0.01),
-              metrics=['accuracy'])
+# Make a loss object
+loss_object = tf.keras.losses.SparseCategoricalCrossentropy()
 
+# Select the optimizer
+optimizer = tf.keras.optimizers.Adagrad(learning_rate=0.01)
+
+# Specify metrics for training
+train_loss = tf.keras.metrics.Mean(name='train_loss')
+train_metric = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
+
+# Specify metrics for testing
+test_loss = tf.keras.metrics.Mean(name='test_loss')
+test_metric = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
 ########################################################################################
 
-model_dir = tempfile.mkdtemp()
-keras_estimator = tf.keras.estimator.model_to_estimator(
-    keras_model=model, model_dir=model_dir)
+# Create an instance of the model
+model = CNN_Model(loss_object=loss_object,
+                  optimizer=optimizer,
+                  train_loss=train_loss,
+                  train_metric=train_metric,
+                  test_loss=test_loss,
+                  test_metric=test_metric)
 
-keras_estimator.train(input_fn=train_input_fn, steps=4600)
+EPOCHS = 50
+
+model.fit(train=dataset,
+          test=dataset,
+          epochs=EPOCHS)
 
 # model.fit(batch_images, batch_labels, steps_per_epoch=92, epochs=50)
 
@@ -184,8 +278,8 @@ cn_test_labels = tf.keras.utils.to_categorical(np.zeros(test_size), 2)
 # ad_test_labels = np.ones(test_size), 2
 # cn_test_labels = np.zeros(test_size), 2
 
-evaluation_ad = keras_estimator.evaluate(ad_test, ad_test_labels, verbose=0)
-evaluation_cn = keras_estimator.evaluate(cn_test, cn_test_labels, verbose=0)
+evaluation_ad = model.evaluate(ad_test, ad_test_labels, verbose=0)
+evaluation_cn = model.evaluate(cn_test, cn_test_labels, verbose=0)
 
 print("AD: ", evaluation_ad[1])
 print("CN: ", evaluation_cn[1])
