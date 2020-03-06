@@ -159,8 +159,8 @@ class CNN_Model(Model):
             x = self.flatten(x)
             x = self.dense1(x)
             x = self.dropout1(x)
-            x = self.dense1(x)
-            x = self.dropout1(x)
+            x = self.dense2(x)
+            x = self.dropout2(x)
             return self.dense3(x)
 
         @tf.function
