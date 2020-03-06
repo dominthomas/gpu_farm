@@ -188,3 +188,92 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
+
+
+########################################################################################
+def cnn_model(features, labels, mode, params):
+    with tf.device("/cpu:0"):
+        with tf.device("/gpu:0"):
+            net = features
+            net = tf.identity(net, name="input_tensor")
+
+            net = Conv3D(64,
+                         input_shape=(100, 100, 100, 1),
+                         data_format='channels_last',
+                         kernel_size=(7, 7, 7),
+                         strides=(2, 2, 2),
+                         padding='valid',
+                         activation='relu')
+
+        with tf.device("/gpu:1"):
+            net = Conv3D(64,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu')
+
+        with tf.device("/gpu:2"):
+            net = Conv3D(128,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu')
+
+            net = MaxPooling3D(pool_size=(2, 2, 2),
+                               padding='valid')
+
+        with tf.device("/gpu:3"):
+            net = Conv3D(128,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu')
+
+            net = MaxPooling3D(pool_size=(2, 2, 2),
+                               padding='valid')
+
+        with tf.device("/gpu:4"):
+            net = Conv3D(128,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu')
+
+            net = MaxPooling3D(pool_size=(2, 2, 2),
+                               padding='valid')
+
+            net = Flatten()
+
+            net = Dense(units=256, activation='relu')
+            net = Dropout(0.7)
+            net = Dense(units=256, activation='relu')
+            net = Dropout(0.7)
+            net = Dense(units=1, activation='sigmoid')
+
+            logits = net
+            y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
+            y_pred = tf.identity(y_pred, name="output_pred")
+            y_pred_cls = tf.argmax(y_pred, axis=1)
+            y_pred_cls = tf.identity(y_pred_cls, name="output_cls")
+
+    if mode == tf.estimator.ModeKeys.PREDICT:
+        spec = tf.estimator.EstimatorSpec(mode=mode,
+                                          predictions=y_pred_cls)
+    else:
+        cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels,
+                                                                logits=logits)
+        loss = tf.reduce_mean(cross_entropy)
+
+        optimizer = tf.compat.v1.train.AdagradOptimizer(learning_rate=params["learning_rate"])
+        train_op = optimizer.minimize(
+            loss=loss, global_step=tf.train.get_global_step())
+        metrics = {
+            "accuracy": tf.metrics.accuracy(labels, y_pred_cls)
+        }
+
+        spec = tf.estimator.EstimatorSpec(
+            mode=mode,
+            loss=loss,
+            train_op=train_op,
+            eval_metric_ops=metrics)
+
+    return spec
+
+
+########################################################################################
