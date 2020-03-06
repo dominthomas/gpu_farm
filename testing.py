@@ -39,7 +39,9 @@ print(random_labels2)
 
 
 ########################################################################################
-class CnnModel(Model):
+########################################################################################
+
+class cn_model(Model):
     with tf.device("/cpu:0"):
         def __init__(self,
                      loss_object,
@@ -97,7 +99,7 @@ class CnnModel(Model):
                     self.dropout1 = Dropout(0.7)
                     self.dense2 = Dense(256, activation='relu')
                     self.dropout2 = Dropout(0.7)
-                    self.dense3 = Dense(2, activation='softmax')
+                    self.dense3 = Dense(1, activation='sigmoid')
 
                 self.loss_object = loss_object
                 self.optimizer = optimizer
@@ -106,5 +108,83 @@ class CnnModel(Model):
                 self.test_loss = test_loss
                 self.test_metric = test_metric
 
+        def cnn_model(self, x):
+            x = self.conv1(x)
+            x = self.conv2(x)
+            x = self.conv3(x)
+            x = self.maxPool1(x)
+            x = self.conv4(x)
+            x = self.maxPool2(x)
+            x = self.conv5(x)
+            x = self.maxPool3(x)
+            x = self.flatten(x)
+            x = self.dense1(x)
+            x = self.dropout1(x)
+            x = self.dense1(x)
+            x = self.dropout1(x)
+            return self.dense3(x)
 
+
+########################################################################################
+
+########################################################################################
+
+########################################################################################
+with tf.device("/cpu:0"):
+    with tf.device("/gpu:0"):
+        model = tf.keras.Sequential()
+
+        model.add(Conv3D(64,
+                         input_shape=(100, 100, 100, 1),
+                         data_format='channels_last',
+                         kernel_size=(7, 7, 7),
+                         strides=(2, 2, 2),
+                         padding='valid',
+                         activation='relu'))
+
+    with tf.device("/gpu:1"):
+        model.add(Conv3D(64,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu'))
+
+    with tf.device("/gpu:2"):
+        model.add(Conv3D(128,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu'))
+
+        model.add(MaxPooling3D(pool_size=(2, 2, 2),
+                               padding='valid'))
+
+    with tf.device("/gpu:3"):
+        model.add(Conv3D(128,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu'))
+
+        model.add(MaxPooling3D(pool_size=(2, 2, 2),
+                               padding='valid'))
+
+    with tf.device("/gpu:4"):
+        model.add(Conv3D(128,
+                         kernel_size=(3, 3, 3),
+                         padding='valid',
+                         activation='relu'))
+
+        model.add(MaxPooling3D(pool_size=(2, 2, 2),
+                               padding='valid'))
+
+        model.add(Flatten())
+
+        model.add(Dense(256, activation='relu'))
+        model.add(Dropout(0.7))
+        model.add(Dense(256, activation='relu'))
+        model.add(Dropout(0.7))
+        model.add(Dense(1, activation='sigmoid'))
+
+
+model.compile(loss=tf.keras.losses.binary_crossentropy,
+              optimizer=tf.keras.optimizers.Adagrad(0.01),
+              metrics=['accuracy'])
 ########################################################################################
