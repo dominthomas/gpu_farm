@@ -10,9 +10,8 @@ import random
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
 
 # tf.compat.v1.reset_default_graph()
-
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
+# sess = tf.Session()
+# sess.run(tf.global_variables_initializer())
 
 """Configure GPUs to prevent OOM errors"""
 gpus = tf.config.experimental.list_physical_devices('GPU')
