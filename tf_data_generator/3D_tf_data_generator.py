@@ -141,7 +141,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
 
 ########################################################################################
 ########################################################################################
-model.fit_generator(batch_images, batch_labels, steps_per_epoch=92, epochs=50)
+model.fit_generator((batch_images, batch_labels), steps_per_epoch=92, epochs=50)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 test_size = 5
