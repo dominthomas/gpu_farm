@@ -166,7 +166,7 @@ class CNN_Model(Model):
         @tf.function
         def train_step(self, images, labels):
             with tf.GradientTape() as tape:
-                predictions = self.nn_model(images)
+                predictions = self.cnn_model(images)
                 loss = self.loss_object(labels, predictions)
             gradients = tape.gradient(loss, self.trainable_variables)
             self.optimizer.apply_gradients(zip(
@@ -181,7 +181,7 @@ class CNN_Model(Model):
                 This is a TensorFlow function, run once for each epoch for the
                 whole input.
             '''
-            predictions = self.nn_model(images)
+            predictions = self.cnn_model(images)
             t_loss = self.loss_object(labels, predictions)
 
             self.test_loss(t_loss)
