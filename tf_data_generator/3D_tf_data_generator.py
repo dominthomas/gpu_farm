@@ -37,8 +37,8 @@ random.Random(129).shuffle(ad_files)
 random.Random(129).shuffle(cn_files)
 
 """Split files for training"""
-ad_train = ad_files[0:275]
-cn_train = cn_files[0:275]
+ad_train = ad_files[0:276]
+cn_train = cn_files[0:276]
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
