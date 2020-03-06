@@ -153,8 +153,8 @@ class CNN_Model(Model):
             return self.dense3(x)
 
 
-def model_fn(images, labels, mode, params):
-    logits = CNN_Model.cnn_model(images)
+def model_fn(features, labels, mode, params):
+    logits = CNN_Model.cnn_model(features)
     y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
     y_pred = tf.identity(y_pred, name="output_pred")
     y_pred_cls = tf.argmax(y_pred, axis=1)
@@ -186,7 +186,7 @@ def model_fn(images, labels, mode, params):
 
 ########################################################################################
 model = tf.estimator.Estimator(model_fn=model_fn,
-                               params={"learning_rate": 1e-4},
+                               params={"learning_rate": 0.001},
                                model_dir="./model5/")
 ########################################################################################
 count = 0
