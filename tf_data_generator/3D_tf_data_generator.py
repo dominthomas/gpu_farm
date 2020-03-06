@@ -73,7 +73,8 @@ def load_image_wrapper(file, labels):
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
 dataset = dataset.batch(6)
-dataset = dataset.prefetch(buffer_size=5)
+dataset = dataset.prefetch(buffer_size=2)
+dataset = dataset.repeat()
 iterator = iter(dataset)
 batch_images, batch_labels = iterator.get_next()
 
