@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Conv3D, MaxPooling3D
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
+from tensorflow.keras import Model
 import os
 import gc
 import random
@@ -13,6 +14,7 @@ import random
 """Make sure that the working directory for this python script is in the '/home/k1651915/OASIS/3D/all/' , 
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
 
+tf.keras.backend.set_floatx('float64')
 # tf.compat.v1.reset_default_graph()
 # sess = tf.Session()
 # sess.run(tf.global_variables_initializer())
@@ -76,69 +78,71 @@ dataset = dataset.prefetch(buffer_size=1)
 iterator = iter(dataset)
 batch_of_images = iterator.get_next()
 
+
 ########################################################################################
+class Model(Model):
+    with tf.device("/cpu:0"):
+        with tf.device("/gpu:0"):
+            model = tf.keras.Sequential()
 
-with tf.device("/cpu:0"):
-    with tf.device("/gpu:0"):
-        model = tf.keras.Sequential()
+            model.add(Conv3D(64,
+                             input_shape=(100, 100, 100, 1),
+                             data_format='channels_last',
+                             kernel_size=(7, 7, 7),
+                             strides=(2, 2, 2),
+                             padding='valid',
+                             activation='relu'))
 
-        model.add(Conv3D(64,
-                         input_shape=(100, 100, 100, 1),
-                         data_format='channels_last',
-                         kernel_size=(7, 7, 7),
-                         strides=(2, 2, 2),
-                         padding='valid',
-                         activation='relu'))
+        with tf.device("/gpu:1"):
+            model.add(Conv3D(64,
+                             kernel_size=(3, 3, 3),
+                             padding='valid',
+                             activation='relu'))
 
-    with tf.device("/gpu:1"):
-        model.add(Conv3D(64,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+        with tf.device("/gpu:2"):
+            model.add(Conv3D(128,
+                             kernel_size=(3, 3, 3),
+                             padding='valid',
+                             activation='relu'))
 
-    with tf.device("/gpu:2"):
-        model.add(Conv3D(128,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+            model.add(MaxPooling3D(pool_size=(2, 2, 2),
+                                   padding='valid'))
 
-        model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                               padding='valid'))
+        with tf.device("/gpu:3"):
+            model.add(Conv3D(128,
+                             kernel_size=(3, 3, 3),
+                             padding='valid',
+                             activation='relu'))
 
-    with tf.device("/gpu:3"):
-        model.add(Conv3D(128,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+            model.add(MaxPooling3D(pool_size=(2, 2, 2),
+                                   padding='valid'))
 
-        model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                               padding='valid'))
+        with tf.device("/gpu:4"):
+            model.add(Conv3D(128,
+                             kernel_size=(3, 3, 3),
+                             padding='valid',
+                             activation='relu'))
 
-    with tf.device("/gpu:4"):
-        model.add(Conv3D(128,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+            model.add(MaxPooling3D(pool_size=(2, 2, 2),
+                                   padding='valid'))
 
-        model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                               padding='valid'))
+            model.add(Flatten())
 
-        model.add(Flatten())
+            model.add(Dense(256, activation='relu'))
+            model.add(Dropout(0.7))
+            model.add(Dense(256, activation='relu'))
+            model.add(Dropout(0.7))
+            model.add(Dense(2, activation='softmax'))
 
-        model.add(Dense(256, activation='relu'))
-        model.add(Dropout(0.7))
-        model.add(Dense(256, activation='relu'))
-        model.add(Dropout(0.7))
-        model.add(Dense(2, activation='softmax'))
 
 model.compile(loss=tf.keras.losses.categorical_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 
-########################################################################################
-########################################################################################
 
-model.fit(batch_of_images[0], batch_of_images[1], steps_per_epoch=92, epochs=50)
+########################################################################################
+########################################################################################
+model.fit(batch_of_images[0], batch_of_images[1], steps_per_epoch=2, epochs=50)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 test_size = 5
