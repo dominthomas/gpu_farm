@@ -75,7 +75,15 @@ def load_image_wrapper(file, labels):
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
 dataset = dataset.batch(6, drop_remainder=True).repeat()
-dataset = dataset.prefetch(buffer_size=4)
+dataset = dataset.prefetch(buffer_size=1)
+
+
+test = train[0:59]
+test_labels = labels[0:59]
+test_dataset = tf.data.Dataset.from_tensor_slices((test, test_labels))
+test_dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
+test_dataset = dataset.batch(6, drop_remainder=True).repeat()
+test_dataset = dataset.prefetch(buffer_size=1)
 
 
 ########################################################################################
@@ -235,10 +243,10 @@ model = CNN_Model(loss_object=loss_object,
                   test_loss=test_loss,
                   test_metric=test_metric)
 
-EPOCHS = 50
+EPOCHS = 1
 
 model.fit(train=dataset,
-          test=dataset,
+          test=test_dataset,
           epochs=EPOCHS)
 
 # model.fit(batch_images, batch_labels, steps_per_epoch=92, epochs=50)
