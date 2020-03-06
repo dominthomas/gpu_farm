@@ -81,13 +81,15 @@ def train_input():
 
 
 ########################################################################################
+# input_shape = (100, 100, 100, 1),
+
+
 class CNN_Model(Model):
     with tf.device("/cpu:0"):
         def __init__(self):
             super(CNN_Model, self).__init__()
             with tf.device("/gpu:0"):
                 self.conv1 = Conv3D(64,
-                                    input_shape=(100, 100, 100, 1),
                                     data_format='channels_last',
                                     kernel_size=(7, 7, 7),
                                     strides=(2, 2, 2),
@@ -136,8 +138,9 @@ class CNN_Model(Model):
                     self.dense3 = Dense(2, activation='softmax')
 
         def cnn_model(self, features):
-            x = features[0]
             x = tf.identity(features, name="input_tensor")
+            x = tf.reshape(x, [-1, 100, 100, 100, 1])
+            x = tf.identity(x, name="input_tensor_after")
             x = self.conv1(x, name="layer_conv1")
             x = self.conv2(x, name="layer_conv2")
             x = self.conv3(x, name="layer_conv3")
