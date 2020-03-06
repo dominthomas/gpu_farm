@@ -37,8 +37,8 @@ random.Random(129).shuffle(ad_files)
 random.Random(129).shuffle(cn_files)
 
 """Split files for training"""
-ad_train = ad_files[0:277]
-cn_train = cn_files[0:277]
+ad_train = ad_files[0:275]
+cn_train = cn_files[0:275]
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
@@ -72,7 +72,7 @@ def load_image_wrapper(file, labels):
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
-dataset = dataset.batch(6, drop_remainder=True).repeat(4600)
+dataset = dataset.batch(6, drop_remainder=True).repeat(50)
 dataset = dataset.prefetch(buffer_size=1)
 iterator = iter(dataset)
 batch_images, batch_labels = iterator.get_next()
