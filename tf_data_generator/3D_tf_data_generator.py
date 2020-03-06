@@ -68,10 +68,7 @@ def load_image(file, label):
 
 @tf.autograph.experimental.do_not_convert
 def load_image_wrapper(file, labels):
-    result = tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
-    nifti = result[0]
-    labels = result[1]
-    return ({'dense_input':nifti}, labels)
+    return tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
 
 
 def train_input_fn():
@@ -135,10 +132,10 @@ with tf.device("/cpu:0"):
         model.add(Dropout(0.7))
         model.add(Dense(256, activation='relu'))
         model.add(Dropout(0.7))
-        model.add(Dense(1, activation='sigmoid'))
+        model.add(Dense(2, activation='softmax'))
 
 
-model.compile(loss=tf.keras.losses.binary_crossentropy(from_logits=True),
+model.compile(loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 
