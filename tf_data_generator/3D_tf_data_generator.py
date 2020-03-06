@@ -136,7 +136,7 @@ class CNN_Model(Model):
                     self.dense3 = Dense(2, activation='softmax')
 
         def cnn_model(self, x):
-            x = x['nifti']
+            x = x["nifti"]
             x = tf.identity(x, name="input_tensor")
             x = self.conv1(x, name="layer_conv1")
             x = self.conv2(x, name="layer_conv2")
