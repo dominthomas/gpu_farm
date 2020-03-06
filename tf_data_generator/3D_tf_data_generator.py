@@ -57,13 +57,13 @@ os.chdir("/home/k1651915/OASIS/3D/all/")
 
 
 def load_image(file, label):
-    nifti = np.asarray(nibabel.load(file.numpy().decode('utf-8')).get_fdata())
+    nifti = np.asarray(nibabel.load(file.numpy().decode('utf-8')).get_fdata()).astype(np.float32)
 
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
-    nifti = tf.convert_to_tensor(nifti, tf.float32)
+    #nifti = tf.convert_to_tensor(nifti, tf.float32)
     return nifti, tf.cast(label, tf.int32)
 
 
