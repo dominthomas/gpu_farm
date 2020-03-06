@@ -88,13 +88,13 @@ def cnn_model(features, labels, mode, params):
             net = features
             net = tf.identity(net, name="input_tensor")
 
-            net = Conv3D(net, 64,
+            net = Conv3D(64,
                          input_shape=(100, 100, 100, 1),
                          data_format='channels_last',
                          kernel_size=(7, 7, 7),
                          strides=(2, 2, 2),
                          padding='valid',
-                         activation='relu')
+                         activation='relu').apply(net)
 
         with tf.device("/gpu:1"):
             net = Conv3D(net, 64,
