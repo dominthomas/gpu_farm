@@ -136,13 +136,6 @@ class CNN_Model(Model):
                     self.dropout2 = Dropout(0.7)
                     self.dense3 = Dense(2, activation='softmax')
 
-                self.loss_object = loss_object
-                self.optimizer = optimizer
-                self.train_loss = train_loss
-                self.train_metric = train_metric
-                self.test_loss = test_loss
-                self.test_metric = test_metric
-
         def cnn_model(self, x):
             x = self.conv1(x)
             x = self.conv2(x)
@@ -159,35 +152,36 @@ class CNN_Model(Model):
             x = self.dropout2(x)
             return self.dense3(x)
 
-        def model_fn(self, images, labels, mode, params):
-            logits = self.cnn_model(images)
-            y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
-            y_pred = tf.identity(y_pred, name="output_pred")
-            y_pred_cls = tf.argmax(y_pred, axis=1)
-            y_pred_cls = tf.identity(y_pred_cls, name="output_cls")
 
-            if mode == tf.estimator.ModeKeys.PREDICT:
-                spec = tf.estimator.EstimatorSpec(mode=mode,
-                                                  predictions=y_pred_cls)
-            else:
-                cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels,
-                                                                        logits=logits)
-                loss = tf.reduce_mean(cross_entropy)
+def model_fn(images, labels, mode, params):
+    logits = CNN_Model.cnn_model(images)
+    y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
+    y_pred = tf.identity(y_pred, name="output_pred")
+    y_pred_cls = tf.argmax(y_pred, axis=1)
+    y_pred_cls = tf.identity(y_pred_cls, name="output_cls")
 
-                optimizer = tf.compat.v1.train.AdagradOptimizer(learning_rate=params["learning_rate"])
-                train_op = optimizer.minimize(
-                    loss=loss, global_step=tf.train.get_global_step())
-                metrics = {
-                    "accuracy": tf.metrics.accuracy(labels, y_pred_cls)
-                }
+    if mode == tf.estimator.ModeKeys.PREDICT:
+        spec = tf.estimator.EstimatorSpec(mode=mode,
+                                          predictions=y_pred_cls)
+    else:
+        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels,
+                                                                       logits=logits)
+        loss = tf.reduce_mean(cross_entropy)
 
-                spec = tf.estimator.EstimatorSpec(
-                    mode=mode,
-                    loss=loss,
-                    train_op=train_op,
-                    eval_metric_ops=metrics)
+        optimizer = tf.compat.v1.train.AdagradOptimizer(learning_rate=params["learning_rate"])
+        train_op = optimizer.minimize(
+            loss=loss, global_step=tf.train.get_global_step())
+        metrics = {
+            "accuracy": tf.metrics.accuracy(labels, y_pred_cls)
+        }
 
-            return spec
+        spec = tf.estimator.EstimatorSpec(
+            mode=mode,
+            loss=loss,
+            train_op=train_op,
+            eval_metric_ops=metrics)
+
+    return spec
 
 
 ########################################################################################
