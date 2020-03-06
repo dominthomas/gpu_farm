@@ -173,7 +173,7 @@ model = tf.estimator.Estimator(model_fn=cnn_model,
 
 count = 0
 while count < 50:
-    model.train(input_fn=train_input_fn(), steps=92)
+    model.train(input_fn=train_input_fn, steps=92)
     sys.stdout.flush()
     count = count + 1
 
