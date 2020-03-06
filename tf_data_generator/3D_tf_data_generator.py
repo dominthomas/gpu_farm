@@ -154,7 +154,8 @@ class CNN_Model(Model):
 
 
 def model_fn(features, labels, mode, params):
-    logits = CNN_Model.cnn_model(features)
+    m = CNN_Model()
+    logits = CNN_Model.cnn_model(m, features)
     y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
     y_pred = tf.identity(y_pred, name="output_pred")
     y_pred_cls = tf.argmax(y_pred, axis=1)
