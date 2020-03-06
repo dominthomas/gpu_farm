@@ -79,6 +79,8 @@ iterator = iter(dataset)
 
 def get_batch():
     batch = iterator.get_next()
+    print(batch[0].size)
+    print(batch[1].size)
     return batch[0], batch[1]
 
 
