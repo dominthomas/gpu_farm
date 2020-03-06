@@ -77,8 +77,7 @@ def train_input():
     dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
     dataset = dataset.batch(12, drop_remainder=True).repeat()
     dataset = dataset.prefetch(buffer_size=2)
-    iterator = iter(dataset)
-    return iterator.get_next()
+    return dataset
 
 
 ########################################################################################
