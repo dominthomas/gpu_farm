@@ -77,7 +77,6 @@ dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
 dataset = dataset.batch(6, drop_remainder=True)
 dataset = dataset.prefetch(buffer_size=4)
 iterator = iter(dataset)
-batch = iterator.get_next()
 
 
 ########################################################################################
@@ -172,7 +171,7 @@ model = tf.estimator.Estimator(model_fn=cnn_model,
 
 count = 0
 while count < 50:
-    model.train(input_fn=batch, steps=92)
+    model.train(input_fn=iterator, steps=92)
     sys.stdout.flush()
     count = count + 1
 
