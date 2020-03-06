@@ -72,22 +72,18 @@ def load_image_wrapper(file, labels):
     return tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
 
 
-dataset = tf.data.Dataset.from_tensor_slices((train, labels))
-dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
-dataset = dataset.batch(12, drop_remainder=True).repeat()
-dataset = dataset.prefetch(buffer_size=2)
+def train_input():
+    dataset = tf.data.Dataset.from_tensor_slices((train, labels))
+    dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
+    dataset = dataset.batch(12, drop_remainder=True).repeat()
+    dataset = dataset.prefetch(buffer_size=2)
+    return dataset
 
 
 ########################################################################################
 class CNN_Model(Model):
     with tf.device("/cpu:0"):
-        def __init__(self,
-                     loss_object,
-                     optimizer,
-                     train_loss,
-                     train_metric,
-                     test_loss,
-                     test_metric):
+        def __init__(self):
             super(CNN_Model, self).__init__()
 
             with tf.device("/gpu:0"):
@@ -163,78 +159,47 @@ class CNN_Model(Model):
             x = self.dropout2(x)
             return self.dense3(x)
 
-        @tf.function
-        def train_step(self, images, labels):
-            print("Hi")
-            with tf.GradientTape() as tape:
-                predictions = self.cnn_model(images)
-                loss = self.loss_object(labels, predictions)
-            gradients = tape.gradient(loss, self.trainable_variables)
-            self.optimizer.apply_gradients(zip(
-                gradients, self.trainable_variables))
+        def model_fn(self, images, labels, mode, params):
+            logits = self.cnn_model(images)
+            y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
+            y_pred = tf.identity(y_pred, name="output_pred")
+            y_pred_cls = tf.argmax(y_pred, axis=1)
+            y_pred_cls = tf.identity(y_pred_cls, name="output_cls")
 
-            self.train_loss(loss)
-            self.train_metric(labels, predictions)
+            if mode == tf.estimator.ModeKeys.PREDICT:
+                spec = tf.estimator.EstimatorSpec(mode=mode,
+                                                  predictions=y_pred_cls)
+            else:
+                cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(labels=labels,
+                                                                        logits=logits)
+                loss = tf.reduce_mean(cross_entropy)
 
-        @tf.function
-        def test_step(self, images, labels):
-            '''
-                This is a TensorFlow function, run once for each epoch for the
-                whole input.
-            '''
-            predictions = self.cnn_model(images)
-            t_loss = self.loss_object(labels, predictions)
+                optimizer = tf.compat.v1.train.AdagradOptimizer(learning_rate=params["learning_rate"])
+                train_op = optimizer.minimize(
+                    loss=loss, global_step=tf.train.get_global_step())
+                metrics = {
+                    "accuracy": tf.metrics.accuracy(labels, y_pred_cls)
+                }
 
-            self.test_loss(t_loss)
-            self.test_metric(labels, predictions)
+                spec = tf.estimator.EstimatorSpec(
+                    mode=mode,
+                    loss=loss,
+                    train_op=train_op,
+                    eval_metric_ops=metrics)
 
-        def fit(self, train, epochs):
-            '''
-                This fit function runs training and testing.
-            '''
-            for epoch in range(epochs):
-                for images, labels in train:
-                    self.train_step(images, labels)
-
-                template = 'Epoch {}, Loss: {}, Accuracy: {}'
-                print(template.format(epoch + 1,
-                                      self.train_loss.result(),
-                                      self.train_metric.result() * 100))
-
-                # Reset the metrics for the next epoch
-                self.train_loss.reset_states()
-                self.train_metric.reset_states()
-                self.test_loss.reset_states()
-                self.test_metric.reset_states()
+            return spec
 
 
-# Make a loss object
-loss_object = tf.keras.losses.SparseCategoricalCrossentropy()
-
-# Select the optimizer
-optimizer = tf.keras.optimizers.Adagrad(learning_rate=0.01)
-
-# Specify metrics for training
-train_loss = tf.keras.metrics.Mean(name='train_loss')
-train_metric = tf.keras.metrics.SparseCategoricalAccuracy(name='train_accuracy')
-
-# Specify metrics for testing
-test_loss = tf.keras.metrics.Mean(name='test_loss')
-test_metric = tf.keras.metrics.SparseCategoricalAccuracy(name='test_accuracy')
 ########################################################################################
-
-# Create an instance of the model
-model = CNN_Model(loss_object=loss_object,
-                  optimizer=optimizer,
-                  train_loss=train_loss,
-                  train_metric=train_metric,
-                  test_loss=test_loss,
-                  test_metric=test_metric)
-
-EPOCHS = 1
-
-model.fit(train=dataset,
-          epochs=EPOCHS)
+model = tf.estimator.Estimator(model_fn=CNN_Model.model_fn,
+                               params={"learning_rate": 1e-4},
+                               model_dir="./model5/")
+########################################################################################
+count = 0
+while count < 50:
+    model.train(input_fn=train_input, steps=92)
+    sys.stdout.flush()
+    count = count + 1
 
 # model.fit(batch_images, batch_labels, steps_per_epoch=92, epochs=50)
 
