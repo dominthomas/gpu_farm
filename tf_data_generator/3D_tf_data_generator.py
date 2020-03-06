@@ -82,7 +82,7 @@ batch = iterator.get_next()
 
 
 ########################################################################################
-def cnn_model(features, y_labels, mode, params):
+def cnn_model(features, labels, mode, params):
     with tf.device("/cpu:0"):
         with tf.device("/gpu:0"):
             net = features
@@ -145,7 +145,7 @@ def cnn_model(features, y_labels, mode, params):
         spec = tf.estimator.EstimatorSpec(mode=mode,
                                           predictions=y_pred_cls)
     else:
-        cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=y_labels,
+        cross_entropy = tf.nn.sigmoid_cross_entropy_with_logits(labels=labels,
                                                                 logits=logits)
         loss = tf.reduce_mean(cross_entropy)
 
@@ -153,7 +153,7 @@ def cnn_model(features, y_labels, mode, params):
         train_op = optimizer.minimize(
             loss=loss, global_step=tf.train.get_global_step())
         metrics = {
-            "accuracy": tf.metrics.accuracy(y_labels, y_pred_cls)
+            "accuracy": tf.metrics.accuracy(labels, y_pred_cls)
         }
 
         spec = tf.estimator.EstimatorSpec(
@@ -168,7 +168,8 @@ def cnn_model(features, y_labels, mode, params):
 ########################################################################################
 
 model = tf.estimator.Estimator(model_fn=cnn_model,
-                               params={"learning_rate": 0.01})
+                               params={"learning_rate": 0.01},
+                               model_dir="./model2/")
 
 count = 0
 while count < 50:
