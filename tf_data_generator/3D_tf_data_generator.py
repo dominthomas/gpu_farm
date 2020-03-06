@@ -90,7 +90,7 @@ def get_batch(iter_count, iterator):
         return iterator.get_next()
 
 
-image_batch, image_labels = get_batch(count, iterator)
+batch_images, batch_labels = get_batch(count, iterator)
 
 
 ########################################################################################
