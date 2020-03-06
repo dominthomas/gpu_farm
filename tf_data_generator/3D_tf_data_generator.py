@@ -79,8 +79,8 @@ iterator = iter(dataset)
 
 def get_batch():
     batch = iterator.get_next()
-    print(tf.get_shape(batch[0]))
-    print(tf.get_shape(batch[1]))
+    print(tf.Tensor.get_shape(batch[0]))
+    print(tf.Tensor.get_shape(batch[1]))
     return batch[0], batch[1]
 
 
