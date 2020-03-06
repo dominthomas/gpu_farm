@@ -86,7 +86,7 @@ def cnn_model(features, labels, mode, params):
     with tf.device("/cpu:0"):
         with tf.device("/gpu:0"):
             net = features
-            net = Conv3D(64,
+            net = Conv3D(inputs=net, filters=64,
                          input_shape=(100, 100, 100, 1),
                          data_format='channels_last',
                          kernel_size=(7, 7, 7),
@@ -95,45 +95,45 @@ def cnn_model(features, labels, mode, params):
                          activation='relu')
 
         with tf.device("/gpu:1"):
-            net = Conv3D(64,
+            net = Conv3D(inputs=net, filters=64,
                          kernel_size=(3, 3, 3),
                          padding='valid',
                          activation='relu')
 
         with tf.device("/gpu:2"):
-            net = Conv3D(128,
+            net = Conv3D(inputs=net, filters=128,
                          kernel_size=(3, 3, 3),
                          padding='valid',
                          activation='relu')
 
-            net = MaxPooling3D(pool_size=(2, 2, 2),
+            net = MaxPooling3D(inputs=net, pool_size=(2, 2, 2),
                                padding='valid')
 
         with tf.device("/gpu:3"):
-            net = Conv3D(128,
+            net = Conv3D(inputs=net, filters=128,
                          kernel_size=(3, 3, 3),
                          padding='valid',
                          activation='relu')
 
-            net = MaxPooling3D(pool_size=(2, 2, 2),
+            net = MaxPooling3D(inputs=net, pool_size=(2, 2, 2),
                                padding='valid')
 
         with tf.device("/gpu:4"):
-            net = Conv3D(128,
+            net = Conv3D(inputs=net, filters=128,
                          kernel_size=(3, 3, 3),
                          padding='valid',
                          activation='relu')
 
-            net = MaxPooling3D(pool_size=(2, 2, 2),
+            net = MaxPooling3D(inputs=net, pool_size=(2, 2, 2),
                                padding='valid')
 
-            net = Flatten()
+            net = Flatten(net)
 
-            net = Dense(256, activation='relu')
-            net = Dropout(0.7)
-            net = Dense(256, activation='relu')
-            net = Dropout(0.7)
-            net = Dense(1, activation='sigmoid')
+            net = Dense(inputs=net, units=256, activation='relu')
+            net = Dropout(net, 0.7)
+            net = Dense(inputs=net, units=256, activation='relu')
+            net = Dropout(net, 0.7)
+            net = Dense(inputs=net, units=1, activation='sigmoid')
 
             logits = net
             y_pred = tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels)
