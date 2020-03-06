@@ -79,6 +79,10 @@ dataset = dataset.prefetch(buffer_size=4)
 iterator = iter(dataset)
 
 
+def train_input_fn():
+    return iterator.get_next()
+
+
 ########################################################################################
 def cnn_model(features, labels, mode, params):
     with tf.device("/cpu:0"):
@@ -171,7 +175,7 @@ model = tf.estimator.Estimator(model_fn=cnn_model,
 
 count = 0
 while count < 50:
-    model.train(input_fn=iterator, steps=92)
+    model.train(input_fn=train_input_fn(), steps=92)
     sys.stdout.flush()
     count = count + 1
 
