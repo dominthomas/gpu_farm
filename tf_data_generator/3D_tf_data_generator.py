@@ -73,9 +73,8 @@ def load_image_wrapper(file, labels):
 
 def train_input_fn():
     dataset = tf.data.Dataset.from_tensor_slices((train, labels))
-    dataset = dataset.repeat()
     dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
-    dataset = dataset.batch(6, drop_remainder=True)
+    dataset = dataset.batch(6, drop_remainder=True).repeat()
     dataset = dataset.prefetch(buffer_size=4)
     # iterator = iter(dataset)
     return dataset
@@ -136,7 +135,7 @@ with tf.device("/cpu:0"):
         model.add(Dense(1, activation='sigmoid'))
 
 
-model.compile(loss=tf.keras.losses.binary_crossentropy(from_logits=True),
+model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 
