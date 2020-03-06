@@ -54,7 +54,7 @@ os.chdir("/home/k1651915/OASIS/3D/all/")
 """Create tf data pipeline"""
 
 
-def load_image(file, label):
+def load_image(file):
     nifti = np.asarray(nibabel.load(file.numpy().decode('utf-8')).get_fdata())
 
     xs, ys, zs = np.where(nifti != 0)
@@ -62,26 +62,28 @@ def load_image(file, label):
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     nifti = tf.convert_to_tensor(nifti, np.float64)
-    return nifti, label
+    return nifti
 
 
 @tf.autograph.experimental.do_not_convert
-def load_image_wrapper(file, labels):
-    return tf.py_function(load_image, [file, labels], [tf.float64, tf.float64])
+def load_image_wrapper(file):
+    return tf.py_function(load_image, [file], [tf.float64])
 
 
-dataset = tf.data.Dataset.from_tensor_slices((train, labels))
+dataset = tf.data.Dataset.from_tensor_slices(train)
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=6)
 dataset = dataset.batch(6)
 dataset = dataset.prefetch(buffer_size=1)
+
+dataset_labels = tf.data.Dataset.from_tensor_slices(labels)
+dataset_labels = dataset.batch(6)
+dataset_labels = dataset.prefetch(buffer_size=1)
+
 iterator = iter(dataset)
+iterator2 = iter(dataset_labels)
 
-
-def get_batch():
-    batch = iterator.get_next()
-    print(tf.Tensor.get_shape(batch[0]))
-    print(tf.Tensor.get_shape(batch[1]))
-    return batch[0], batch[1]
+get_image_batch = iterator.get_next()
+get_label_batch = iterator2.get_next()
 
 
 ########################################################################################
@@ -146,7 +148,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
 
 ########################################################################################
 ########################################################################################
-model.fit((get_batch()), steps_per_epoch=90, epochs=50)
+model.fit(get_image_batch, get_label_batch, steps_per_epoch=90, epochs=50)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
 test_size = 5
