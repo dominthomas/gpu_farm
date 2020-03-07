@@ -16,6 +16,7 @@ import gc
 """Make sure that the working directory for this python script is in the '/home/k1651915/OASIS/3D/all/' , 
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
 
+tf.compat.v1.disable_eager_execution()
 """Configure GPUs to prevent OOM errors"""
 gpus = tf.config.experimental.list_physical_devices('GPU')
 for gpu in gpus:
@@ -155,9 +156,9 @@ def cnn_layers(inputs):
 
 
 inputs, targets = iterator.get_next()
-model_input = tf.keras.Input(shape=[100, 100, 100, 1])
+model_input = tf.keras.Input(tensor=inputs)
 model_output = cnn_layers(inputs)
-train_model = Model(inputs=inputs, outputs=model_output)
+train_model = Model(inputs=model_input, outputs=model_output)
 
 train_model.compile(optimizer=tf.keras.optimizers.Adagrad(0.01),
                     loss='binary_crossentropy',
