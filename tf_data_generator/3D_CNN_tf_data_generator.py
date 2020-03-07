@@ -6,7 +6,6 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras import Model
-from keras import backend as K
 import tempfile
 import random
 import sys
@@ -18,7 +17,7 @@ import gc
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
 
 sess = tf.compat.v1.Session()
-K.set_session(sess)
+tf.compat.v1.keras.backend.set_session(sess)
 
 """Configure GPUs to prevent OOM errors"""
 gpus = tf.config.experimental.list_physical_devices('GPU')
