@@ -58,7 +58,7 @@ def load_image(file):
     # nifti = nifti[0:100, 0:100, 0:100]
     nifti = nifti[0:2, 0:2, 0:2]
     nifti = np.reshape(nifti, (2, 2, 2, 1))
-    return {file: nifti}
+    return {file.numpy().decode('utf-8'): nifti}
 
 
 @tf.autograph.experimental.do_not_convert
