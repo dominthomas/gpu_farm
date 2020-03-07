@@ -179,7 +179,10 @@ def model_fn(features, labels, mode, params):
             loss=loss, global_step=tf.compat.v1.train.get_global_step())
 
         metrics = tf.metrics.Accuracy()
-        metrics = metrics.update_state(labels, y_pred_cls)
+
+        metrics = {
+            "accuracy": metrics.update_state(labels, y_pred_cls)
+        }
 
         spec = tf.estimator.EstimatorSpec(
             mode=mode,
