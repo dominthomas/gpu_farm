@@ -81,7 +81,10 @@ print(tf.compat.v1.data.get_output_shapes(dataset))
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
 
-print(iterator.get_next())
+image, label = iterator.get_next()
+print(image)
+print("-------------------------------------")
+print(label)
 
 
 def get_batch():
