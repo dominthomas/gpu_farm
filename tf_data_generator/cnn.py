@@ -41,14 +41,31 @@ print(len(train))
 print(len(labels))
 
 
-"""labels = {}
-for item in ad_files:
-    labels[item] = 1
-for item in cn_files:
-    labels[item] = 0"""
+"""Function to load 3D-MRI voxels"""
+
+
+def get_images(files):
+    return_list = []
+    for file in files:
+        nifti_data = np.asarray(nibabel.load(file).get_fdata())
+        xs, ys, zs = np.where(nifti_data != 0)
+        nifti_data = nifti_data[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
+        nifti_data = nifti_data[0:100, 0:100, 0:100]
+        nifti_data = np.reshape(nifti_data, (100, 100, 100, 1))
+        return_list.append(nifti_data)
+    return return_list
+
 
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
+
+"""Get Validation Data"""
+v_ad = ad_files[0:5]
+v_cn = cn_files[0:5]
+v = v_ad + v_cn
+v_labels = np.concatenate((np.ones(len(v_ad)), np.zeros(len(v_cn))), axis=None)
+v = np.asarray(get_images(v))
+
 
 """Create tf data pipeline"""
 
@@ -152,7 +169,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(batch, steps_per_epoch=92, epochs=50, validation_data=None)
+model.fit(batch, steps_per_epoch=92, epochs=50, validation_data=(v, v_labels))
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
@@ -163,21 +180,6 @@ random.Random(921).shuffle(ad_test_files)
 random.Random(921).shuffle(cn_test_files)
 ad_test_files = ad_test_files[0:test_size]
 cn_test_files = cn_test_files[0:test_size]
-
-"""Function to load 3D-MRI voxels"""
-
-
-def get_images(files):
-    return_list = []
-    for file in files:
-        nifti_data = np.asarray(nibabel.load(file).get_fdata())
-        xs, ys, zs = np.where(nifti_data != 0)
-        nifti_data = nifti_data[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
-        nifti_data = nifti_data[0:100, 0:100, 0:100]
-        nifti_data = np.reshape(nifti_data, (100, 100, 100, 1))
-        return_list.append(nifti_data)
-    return return_list
-
 
 os.chdir("/home/k1651915/ADNI/3D/resized_ad/")
 ad_test = np.asarray(get_images(ad_test_files))
