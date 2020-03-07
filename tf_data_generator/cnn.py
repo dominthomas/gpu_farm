@@ -94,7 +94,7 @@ dataset = dataset.map(load_image_wrapper, num_parallel_calls=24)
 dataset = dataset.repeat()
 dataset = dataset.prefetch(buffer_size=12)
 dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
-dataset = dataset.batch(92, drop_remainder=True)
+dataset = dataset.batch(12, drop_remainder=True)
 
 iterator = iter(dataset)
 
@@ -113,13 +113,11 @@ with tf.device("/cpu:0"):
                          padding='valid',
                          activation='relu'))
 
-    with tf.device("/gpu:1"):
         model.add(Conv3D(64,
                          kernel_size=(3, 3, 3),
                          padding='valid',
                          activation='relu'))
 
-    with tf.device("/gpu:2"):
         model.add(Conv3D(128,
                          kernel_size=(3, 3, 3),
                          padding='valid',
@@ -128,7 +126,6 @@ with tf.device("/cpu:0"):
         model.add(MaxPooling3D(pool_size=(2, 2, 2),
                                padding='valid'))
 
-    with tf.device("/gpu:3"):
         model.add(Conv3D(128,
                          kernel_size=(3, 3, 3),
                          padding='valid',
@@ -137,7 +134,6 @@ with tf.device("/cpu:0"):
         model.add(MaxPooling3D(pool_size=(2, 2, 2),
                                padding='valid'))
 
-    with tf.device("/gpu:4"):
         model.add(Conv3D(128,
                          kernel_size=(3, 3, 3),
                          padding='valid',
@@ -158,7 +154,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(x=batch_image, y=batch_label, epochs=100, steps_per_epoch=6)
+model.fit(x=batch_image, y=batch_label, epochs=100, steps_per_epoch=46)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
