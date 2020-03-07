@@ -68,8 +68,8 @@ def load_image(file, label):
 
 
 @tf.autograph.experimental.do_not_convert
-def load_image_wrapper(file, labels):
-    return tf.py_function(load_image, [file, labels], [tf.float64, tf.int32])
+def load_image_wrapper(file, label):
+    return tf.py_function(load_image, [file, label], [tf.float64, tf.int32])
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
