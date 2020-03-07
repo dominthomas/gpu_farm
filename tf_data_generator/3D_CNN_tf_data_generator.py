@@ -75,7 +75,7 @@ dataset = tf.data.Dataset.from_tensor_slices((train, train_labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
 dataset = dataset.batch(12, drop_remainder=True) # Removed .repeat()
 dataset = dataset.prefetch(buffer_size=2)
-iterator = tf.compat.v1.data.make_initializable_iterator(dataset)
+iterator = iter(dataset)
 batch = iterator.get_next()
 
 
@@ -149,7 +149,7 @@ sess.run(tf.global_variables_initializer())
 epochs = 5
 with sess.as_default():
     for i in range(epochs):
-        sess.run(iterator.initializer)
+        sess.run(iterator)
 
         try:
             while True:
