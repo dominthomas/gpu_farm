@@ -49,24 +49,25 @@ os.chdir("/home/k1651915/OASIS/3D/all/")
 """Create tf data pipeline"""
 
 
-def load_image(file):
+def load_image(file, label):
     nifti = np.asarray(nibabel.load(file.numpy().decode('utf-8')).get_fdata()).astype(np.float32)
 
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     # TODO revert
-    # nifti = nifti[0:100, 0:100, 0:100]
-    nifti = nifti[0:2, 0:2, 0:2]
-    nifti = np.reshape(nifti, (2, 2, 2, 1))
-    return {file.numpy().decode('utf-8'): nifti}
+    nifti = nifti[0:100, 0:100, 0:100]
+    # nifti = nifti[0:2, 0:2, 0:2]
+    nifti = np.reshape(nifti, (100, 100, 100, 1))
+    # return {file.numpy().decode('utf-8'): nifti}
+    return (nifti, label)
 
 
 @tf.autograph.experimental.do_not_convert
-def load_image_wrapper(file):
-    return tf.py_function(load_image, [file], [tf.float64])
+def load_image_wrapper(file, label):
+    return tf.py_function(load_image, [file, label], [tf.float64, tf.float64])
 
 
-dataset = tf.data.Dataset.from_tensor_slices(train)
+dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
 dataset = dataset.batch(6, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=2)
@@ -86,8 +87,8 @@ def get_batch():
     return [batch_data, batch_labels]
 
 
-data_batch = get_batch()
-print(data_batch)
+# data_batch = get_batch()
+# print(data_batch)
 
 
 ########################################################################################
@@ -148,7 +149,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(batch, steps_per_epoch=92, epochs=50)
+model.fit(image_batch, steps_per_epoch=92, epochs=50)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
