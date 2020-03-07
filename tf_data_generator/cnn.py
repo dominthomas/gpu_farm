@@ -78,7 +78,9 @@ dataset = dataset.batch(6, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
 
+batch = iterator.get_next()
 
+"""
 def get_batch():
     batch_images = iterator.get_next()
     print("========================================")
@@ -90,6 +92,8 @@ def get_batch():
 
 
 batch = get_batch()
+"""
+
 
 ########################################################################################
 with tf.device("/cpu:0"):
