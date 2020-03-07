@@ -87,7 +87,7 @@ def get_batch():
     # print(sq)
     cat = tf.keras.utils.to_categorical(batch_images[1], 2)
     print(cat)
-    return tf.squeeze(batch_images[0]), cat
+    return tf.squeeze(batch_images[0], 0), cat
 
 
 batch = get_batch()
