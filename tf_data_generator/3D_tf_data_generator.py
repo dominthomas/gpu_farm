@@ -63,7 +63,7 @@ def load_image(file, label):
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
-    nifti = tf.convert_to_tensor(nifti, tf.float64)
+    nifti = tf.convert_to_tensor(nifti, tf.float32)
     nifti = tf.cast(nifti, tf.float32)
     return nifti, tf.cast(label, tf.int32)
 
@@ -192,7 +192,7 @@ model = tf.estimator.Estimator(model_fn=model_fn,
                                model_dir="./model5/")
 ########################################################################################
 count = 0
-while count < 50:
+while count < 5:
     model.train(input_fn=train_input, steps=92)
     sys.stdout.flush()
     count = count + 1
