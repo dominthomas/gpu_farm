@@ -156,8 +156,8 @@ def cnn_layers(inputs):
 
 inputs, targets = iterator.get_next()
 model_input = tf.keras.Input(shape=[100, 100, 100, 1])
-model_output = cnn_layers(model_input)
-train_model = Model(inputs=model_input, outputs=model_output)
+model_output = cnn_layers(inputs)
+train_model = Model(inputs=inputs, outputs=model_output)
 
 train_model.compile(optimizer=tf.keras.optimizers.Adagrad(0.01),
                     loss='binary_crossentropy',
