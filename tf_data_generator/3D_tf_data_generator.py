@@ -196,6 +196,11 @@ while count < 5:
     sys.stdout.flush()
     count = count + 1
 
+
+with tf.Session() as session:
+    for i in range(epochs):
+        session.run(iterator)
+
 # model.fit(batch_images, batch_labels, steps_per_epoch=92, epochs=50)
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
