@@ -63,7 +63,7 @@ def load_image(file, label):
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     nifti = tf.convert_to_tensor(nifti, tf.float64)
-    return nifti, tf.cast(label, tf.float32)
+    return nifti, tf.cast(label, tf.int32)
 
 
 @tf.autograph.experimental.do_not_convert
@@ -73,19 +73,12 @@ def load_image_wrapper(file, train_label):
 
 dataset = tf.data.Dataset.from_tensor_slices((train, train_labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
-dataset = dataset.batch(12, drop_remainder=True) # Removed .repeat()
+dataset = dataset.batch(12, drop_remainder=True)  # Removed .repeat()
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
 batch = iterator.get_next()
 
-
 ########################################################################################
-
-# x = tf.identity(features, name="input_tensor")
-# x = tf.reshape(x, [-1, 100, 100, 100, 1])
-# x = tf.identity(x, name="input_tensor_after")
-
-
 with tf.device("/cpu:0"):
     img = tf.keras.backend.placeholder(dtype=tf.float64, shape=(12, 100, 100, 100, 1))
     with tf.device("/gpu:0"):
@@ -137,8 +130,7 @@ with tf.device("/cpu:0"):
             x = Dropout(0.7)(x)
             preds = Dense(2, activation='softmax')(x)
 
-
-labels = tf.keras.backend.placeholder(dtype=tf.float32, shape=(6, None))
+labels = tf.keras.backend.placeholder(dtype=tf.int32, shape=(6, None))
 
 loss = tf.math.reduce_mean(tf.keras.losses.SparseCategoricalCrossentropy(labels, preds))
 train_step = tf.compat.v1.train.AdagradOptimizer(0.001).minimize(loss)
