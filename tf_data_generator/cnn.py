@@ -79,23 +79,15 @@ dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
 image_batch = iterator.get_next()
 
-print(image_batch)
 
-
-"""
 def get_batch():
     batch_images = image_batch
-    batch_labels = []
-    batch_data = []
-
-    for key, value in batch_images.items():
-        batch_labels = batch_labels + labels[key]
-        batch_data = batch_data + batch_images[key]
-
-    return [batch_data, batch_labels]
+    print(batch_images[0])
+    print("========================================")
+    print(batch_images[1])
 
 
-# data_batch = get_batch()
+get_batch()
 # print(data_batch)
 """
 
