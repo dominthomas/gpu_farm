@@ -3,8 +3,11 @@ import nibabel
 import tensorflow as tf
 from tensorflow.keras.layers import Conv3D, MaxPooling3D
 from tensorflow.keras.layers import Dense
+from tensorflow.keras import layers
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
+from tensorflow.keras.models import Model
+import tf.keras.backend as K
 import random
 import os
 import gc
@@ -39,7 +42,6 @@ random.Random(129).shuffle(train)
 random.Random(129).shuffle(labels)
 print(len(train))
 print(len(labels))
-
 
 """Function to load 3D-MRI voxels"""
 
@@ -90,73 +92,82 @@ def load_image_wrapper(file, label):
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
-dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
+dataset = dataset.map(load_image_wrapper, num_parallel_calls=24)
 dataset = dataset.repeat(50)
-dataset = dataset.prefetch(buffer_size=2)
+dataset = dataset.prefetch(buffer_size=24)
 dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
 dataset = dataset.batch(12, drop_remainder=True)
-
 iterator = iter(dataset)
 
+
 ########################################################################################
-with tf.device("/cpu:0"):
-    with tf.device("/gpu:0"):
-        model = tf.keras.Sequential()
+def cnn_layers(inputs):
+    with tf.device("/cpu:0"):
+        with tf.device("/gpu:0"):
+            x = Conv3D(64,
+                       input_shape=(100, 100, 100, 1),
+                       data_format='channels_last',
+                       kernel_size=(7, 7, 7),
+                       strides=(2, 2, 2),
+                       padding='valid',
+                       activation='relu')(inputs)
 
-        model.add(Conv3D(64,
-                         input_shape=(100, 100, 100, 1),
-                         data_format='channels_last',
-                         kernel_size=(7, 7, 7),
-                         strides=(2, 2, 2),
-                         padding='valid',
-                         activation='relu'))
+        with tf.device("/gpu:1"):
+            x = Conv3D(64,
+                       kernel_size=(3, 3, 3),
+                       padding='valid',
+                       activation='relu')(x)
 
-    with tf.device("/gpu:1"):
-        model.add(Conv3D(64,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+        with tf.device("/gpu:2"):
+            x = Conv3D(128,
+                       kernel_size=(3, 3, 3),
+                       padding='valid',
+                       activation='relu')(x)
 
-    with tf.device("/gpu:2"):
-        model.add(Conv3D(128,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+            x = MaxPooling3D(pool_size=(2, 2, 2),
+                             padding='valid')(x)
 
-        model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                               padding='valid'))
+        with tf.device("/gpu:3"):
+            x = Conv3D(128,
+                       kernel_size=(3, 3, 3),
+                       padding='valid',
+                       activation='relu')(x)
 
-    with tf.device("/gpu:3"):
-        model.add(Conv3D(128,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+            x = MaxPooling3D(pool_size=(2, 2, 2),
+                             padding='valid')(x)
 
-        model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                               padding='valid'))
+        with tf.device("/gpu:4"):
+            x = Conv3D(128,
+                       kernel_size=(3, 3, 3),
+                       padding='valid',
+                       activation='relu')(x)
 
-    with tf.device("/gpu:4"):
-        model.add(Conv3D(128,
-                         kernel_size=(3, 3, 3),
-                         padding='valid',
-                         activation='relu'))
+            x = MaxPooling3D(pool_size=(2, 2, 2),
+                             padding='valid')(x)
 
-        model.add(MaxPooling3D(pool_size=(2, 2, 2),
-                               padding='valid'))
+            x = Flatten()(x)
 
-        model.add(Flatten())
+            x = Dense(256, activation='relu')(x)
+            x = Dropout(0.7)(x)
+            x = Dense(256, activation='relu')(x)
+            x = Dropout(0.7)(x)
+            predictions = Dense(1, activation='sigmoid')(x)
 
-        model.add(Dense(256, activation='relu'))
-        model.add(Dropout(0.7))
-        model.add(Dense(256, activation='relu'))
-        model.add(Dropout(0.7))
-        model.add(Dense(1, activation='sigmoid'))
+            return predictions
 
-model.compile(loss=tf.keras.losses.binary_crossentropy,
-              optimizer=tf.keras.optimizers.Adagrad(0.01),
-              metrics=['accuracy'])
+
+inputs, targets = iterator.get_next()
+model_input = layers.Input(tensor=inputs)
+model_output = cnn_layers(model_input)
+train_model = Model(inputs=model_input, outputs=model_output)
+
+train_model.compile(optimizer=tf.keras.optimizers.Adagrad(0.01),
+                    loss='binary_crossentropy',
+                    metrics=['accuracy'],
+                    target_tensors=[targets])
+
 ########################################################################################
-model.fit(dataset, epochs=50, steps_per_epoch=46)
+train_model.fit(epochs=50, steps_per_epoch=46)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
@@ -176,12 +187,13 @@ cn_test = np.asarray(get_images(cn_test_files))
 # ad_test_labels = tf.keras.utils.to_categorical(np.ones(test_size), 2)
 # cn_test_labels = tf.keras.utils.to_categorical(np.zeros(test_size), 2)
 
-ad_test_labels = np.concatenate((np.ones((test_size-1)), 1), axis=None)
-cn_test_labels = np.concatenate((np.zeros((test_size-1)), 1), axis=None)
+ad_test_labels = np.concatenate((np.ones((test_size - 1)), 1), axis=None)
+cn_test_labels = np.concatenate((np.zeros((test_size - 1)), 1), axis=None)
 
 # ad_test_labels = np.ones(test_size), 2
 # cn_test_labels = np.zeros(test_size), 2
 
+"""
 evaluation_ad = model.evaluate(ad_test, ad_test_labels, verbose=0)
 evaluation_cn = model.evaluate(cn_test, cn_test_labels, verbose=0)
 
@@ -195,3 +207,4 @@ with open("/home/k1651915/3.txt", "a") as f:
 
 # K.clear_session()
 gc.collect()
+"""
