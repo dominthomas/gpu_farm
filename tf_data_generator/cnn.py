@@ -99,6 +99,7 @@ count = 0
 
 
 def get_batch(curCount):
+    global iterator
     if curCount == 91:
         count = 0
         curCount = 0
