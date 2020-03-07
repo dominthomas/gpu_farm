@@ -86,7 +86,10 @@ def get_batch():
     # sq = tf.expand_dims(batch_images[1], 1)
     # print(sq)
     cat = tf.keras.utils.to_categorical(batch_images[1], 2)
-    the_batch = tf.reshape(batch_images[0], (100, 100, 100, 1))
+    the_batch = []
+    for data in batch_images:
+        the_batch = the_batch + data
+
     print(cat)
     return the_batch, cat
 
