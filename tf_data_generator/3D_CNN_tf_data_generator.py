@@ -15,7 +15,7 @@ import gc
 """@author Domin Thomas"""
 """Make sure that the working directory for this python script is in the '/home/k1651915/OASIS/3D/all/' , 
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
-tf.enable_eager_execution()
+tf.compat.v1.enable_eager_execution()
 sess = tf.compat.v1.Session()
 tf.compat.v1.keras.backend.set_session(sess)
 
