@@ -138,7 +138,7 @@ with tf.device("/cpu:0"):
             preds = Dense(2, activation='softmax')(x)
 
 
-labels = tf.keras.backend.placeholder(tf.int32, shape=(6, None))
+labels = tf.keras.backend.placeholder(dtype=tf.int32, shape=(6, None))
 
 loss = tf.math.reduce_mean(tf.keras.losses.SparseCategoricalCrossentropy(labels, preds))
 train_step = tf.compat.v1.train.AdagradOptimizer(0.001).minimize(loss)
