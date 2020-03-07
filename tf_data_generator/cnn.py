@@ -63,7 +63,7 @@ def load_image(file, label):
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
-    #nifti = tf.reshape(nifti, [1, 100, 100, 100, 1])
+    # nifti = tf.reshape(nifti, [1, 100, 100, 100, 1])
     return nifti, label
 
 
@@ -97,7 +97,9 @@ def get_batch():
     i10 = image_batch[9, :, :, :, :]
     i11 = image_batch[10, :, :, :, :]
     i12 = image_batch[11, :, :, :, :]
-    return [image_batch.toList(), label_batch]
+
+    image_batch = tf.stack([i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12])
+    return [image_batch, label_batch]
 
 
 batch = get_batch()
@@ -154,7 +156,6 @@ with tf.device("/cpu:0"):
         model.add(Dense(256, activation='relu'))
         model.add(Dropout(0.7))
         model.add(Dense(1, activation='sigmoid'))
-
 
 model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
