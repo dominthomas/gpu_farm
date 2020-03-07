@@ -61,10 +61,10 @@ def load_image(file, label):
     # TODO revert
     nifti = nifti[0:100, 0:100, 0:100]
     # nifti = nifti[0:2, 0:2, 0:2]
-    nifti = np.reshape(nifti, (1, 100, 100, 100))
+    nifti = np.reshape(nifti, (100, 100, 100, 1))
     #$ nifti = np.reshape(nifti, (2, 2, 2, 1))
     # return {file.numpy().decode('utf-8'): nifti}
-    return tf.convert_to_tensor(value=nifti, dtype=tf.float64), label
+    return nifti, label
 
 
 @tf.autograph.experimental.do_not_convert
@@ -100,8 +100,8 @@ with tf.device("/cpu:0"):
         model = tf.keras.Sequential()
 
         model.add(Conv3D(64,
-                         input_shape=(1, 100, 100, 100),
-                         data_format='channels_first',
+                         input_shape=(100, 100, 100, 1),
+                         data_format='channels_last',
                          kernel_size=(7, 7, 7),
                          strides=(2, 2, 2),
                          padding='valid',
