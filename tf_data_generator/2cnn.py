@@ -156,7 +156,7 @@ def cnn_layers(inputs):
 
 
 inputs, targets = iterator.get_next()
-model_input = layers.Input(tensor=inputs)
+model_input = tf.keras.Input(tensor=inputs)
 model_output = cnn_layers(model_input)
 train_model = Model(inputs=model_input, outputs=model_output)
 
