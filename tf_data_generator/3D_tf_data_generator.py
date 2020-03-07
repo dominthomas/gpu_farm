@@ -178,17 +178,10 @@ def model_fn(features, labels, mode, params):
         train_op = optimizer.minimize(
             loss=loss, global_step=tf.compat.v1.train.get_global_step())
 
-        metrics = tf.metrics.Accuracy()
-
-        metrics = {
-            "accuracy": metrics.update_state(labels, y_pred_cls)
-        }
-
         spec = tf.estimator.EstimatorSpec(
             mode=mode,
             loss=loss,
-            train_op=train_op,
-            eval_metric_ops=metrics)
+            train_op=train_op)
 
     return spec
 
