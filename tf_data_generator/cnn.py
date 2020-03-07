@@ -93,7 +93,7 @@ dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12).cache()
 dataset = dataset.repeat(50)
 dataset = dataset.prefetch(buffer_size=2)
-dataset = dataset.applyt(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
+dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
 dataset = dataset.batch(12, drop_remainder=True)
 
 ########################################################################################
