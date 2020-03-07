@@ -154,7 +154,7 @@ model.compile(loss=tf.keras.losses.sparse_categorical_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(x=image_batch, y=label_batch, steps_per_epoch=46, epochs=50, validation_data=(v, v_labels))
+model.fit(x=image_batch, y=label_batch, steps_per_epoch=45, epochs=50, validation_data=(v, v_labels))
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
