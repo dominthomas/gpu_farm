@@ -62,7 +62,7 @@ def load_image(file, label):
     # nifti = nifti[0:100, 0:100, 0:100]
     nifti = nifti[0:2, 0:2, 0:2]
     # nifti = np.reshape(nifti, (1, 100, 100, 100))
-    nifti = np.reshape(nifti, (3, 3, 3, 1))
+    nifti = np.reshape(nifti, (2, 2, 2, 1))
     # return {file.numpy().decode('utf-8'): nifti}
     return nifti, label
 
