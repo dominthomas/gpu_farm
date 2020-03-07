@@ -94,7 +94,7 @@ dataset = dataset.map(load_image_wrapper, num_parallel_calls=24)
 dataset = dataset.repeat(50)
 dataset = dataset.prefetch(buffer_size=12)
 dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
-dataset = dataset.batch(12, drop_remainder=True)
+dataset = dataset.batch(24, drop_remainder=True)
 
 iterator = iter(dataset)
 
@@ -158,7 +158,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(x=batch_image, y=batch_label, epochs=50, steps_per_epoch=46)
+model.fit(x=batch_image, y=batch_label, epochs=50, steps_per_epoch=23)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
