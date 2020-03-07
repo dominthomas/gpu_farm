@@ -67,8 +67,8 @@ def load_image(file, label):
 
 
 @tf.autograph.experimental.do_not_convert
-def load_image_wrapper(file, train_label):
-    return tf.py_function(load_image, [file, train_labels], [tf.float64, tf.float64])
+def load_image_wrapper(file, label):
+    return tf.py_function(load_image, [file, label], [tf.float64, tf.float64])
 
 
 def train_input_fn():
