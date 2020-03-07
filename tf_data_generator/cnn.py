@@ -86,18 +86,8 @@ def get_batch():
     # sq = tf.expand_dims(batch_images[1], 1)
     # print(sq)
     cat = tf.keras.utils.to_categorical(batch_images[1], 2)
-    the_batch = []
-    d1 = batch_images[1]
-    d2 = batch_images[2]
-    d3 = batch_images[3]
-    d4 = batch_images[4]
-    d5 = batch_images[5]
-    d6 = batch_images[6]
-
-    the_batch = [d1, d2, d3, d4, d5, d6]
-
     print(cat)
-    return the_batch, cat
+    return tf.squeeze(batch_images[0]), cat
 
 
 batch = get_batch()
