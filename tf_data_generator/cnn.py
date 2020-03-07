@@ -88,8 +88,8 @@ def load_image_wrapper(file, label):
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
 dataset = dataset.repeat(50)
-dataset = dataset.batch(6, drop_remainder=True)
-dataset = dataset.prefetch(buffer_size=1)
+dataset = dataset.batch(12, drop_remainder=True)
+dataset = dataset.prefetch(buffer_size=6)
 
 # 552 training samples
 # 552 training labels
@@ -151,7 +151,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(dataset.as_numpy_iterator(), epochs=50, validation_data=(v, v_labels))
+model.fit(dataset.as_numpy_iterator(), epochs=50, steps_per_epoch=46)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
