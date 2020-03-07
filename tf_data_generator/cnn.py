@@ -95,7 +95,7 @@ dataset = dataset.batch(6, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
 
-batch = iterator.get_next()
+image_batch, label_batch = iterator.get_next()
 
 
 """
@@ -170,7 +170,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(batch, steps_per_epoch=92, epochs=50, validation_data=(v, v_labels))
+model.fit(x=image_batch, y=label_batch, steps_per_epoch=92, epochs=50, validation_data=(v, v_labels))
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
