@@ -17,7 +17,7 @@ import gc
 """Make sure that the working directory for this python script is in the '/home/k1651915/OASIS/3D/all/' , 
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
 
-sess = tf.Session()
+sess = tf.compat.v1.Session()
 K.set_session(sess)
 
 """Configure GPUs to prevent OOM errors"""
