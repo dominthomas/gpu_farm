@@ -5,20 +5,13 @@ from tensorflow.keras.layers import Conv3D, MaxPooling3D
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
-from tensorflow.keras import Model
-import tempfile
 import random
-import sys
 import os
 import gc
 
 """@author Domin Thomas"""
 """Make sure that the working directory for this python script is in the '/home/k1651915/OASIS/3D/all/' , 
 or in the ADNI 3D/all/ subdirectory depending on the training dataset """
-
-# tf.compat.v1.reset_default_graph()
-# sess = tf.Session()
-# sess.run(tf.global_variables_initializer())
 
 """Configure GPUs to prevent OOM errors"""
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -28,9 +21,6 @@ for gpu in gpus:
 """Retrieve file names"""
 ad_files = os.listdir("/home/k1651915/OASIS/3D/ad/")
 cn_files = os.listdir("/home/k1651915/OASIS/3D/cn/")
-
-sub_id_ad = []
-sub_id_cn = []
 
 """OASIS AD: 178 Subjects, 278 3T MRIs"""
 """OASIS CN: 588 Subjects, 1640 3T MRIs"""
@@ -44,11 +34,14 @@ cn_train = cn_files[0:276]
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
-labels = np.concatenate((np.ones(len(ad_train)), np.zeros(len(cn_train))), axis=None)
 random.Random(129).shuffle(train)
-random.Random(129).shuffle(labels)
 print(len(train))
-print(len(labels))
+
+labels = {}
+for item in ad_files:
+    labels[item] = 1
+for item in cn_files:
+    labels[item] = 0
 
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
@@ -61,10 +54,11 @@ def load_image(file):
 
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
-    nifti = nifti[0:100, 0:100, 0:100]
-    nifti = np.reshape(nifti, (100, 100, 100, 1))
-    # nifti = tf.reshape(nifti, [1, 100, 100, 100, 1])
-    return nifti
+    # TODO revert
+    # nifti = nifti[0:100, 0:100, 0:100]
+    nifti = nifti[0:2, 0:2, 0:2]
+    nifti = np.reshape(nifti, (2, 2, 2, 1))
+    return {file: nifti}
 
 
 @tf.autograph.experimental.do_not_convert
@@ -74,19 +68,27 @@ def load_image_wrapper(file):
 
 dataset = tf.data.Dataset.from_tensor_slices(train)
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
-dataset = dataset.batch(3, drop_remainder=True).repeat()
+dataset = dataset.batch(6, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
-image = iterator.get_next()
+image_batch = iterator.get_next()
 
-labels_data = tf.data.Dataset.from_tensor_slices(labels)
-labels_data = labels_data.map(load_image_wrapper, num_parallel_calls=12)
-labels_data = labels_data.batch(3, drop_remainder=True).repeat()
-labels_data = labels_data.prefetch(buffer_size=2)
-iterator2 = iter(labels_data)
-labels = iterator2.get_next()
 
-print(labels)
+def get_batch():
+    batch_images = image_batch
+    batch_labels = []
+    batch_data = []
+
+    for key, value in batch_images.items():
+        batch_labels = batch_labels + labels[key]
+        batch_data = batch_data + batch_images[key]
+
+    return [batch_data, batch_labels]
+
+
+data_batch = get_batch()
+print(data_batch)
+
 
 ########################################################################################
 with tf.device("/cpu:0"):
@@ -146,7 +148,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(batch, steps_per_epoch=46, epochs=50)
+model.fit(batch, steps_per_epoch=92, epochs=50)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
