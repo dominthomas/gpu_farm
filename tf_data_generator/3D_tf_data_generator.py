@@ -176,7 +176,7 @@ def model_fn(features, labels, mode, params):
 
         optimizer = tf.compat.v1.train.AdagradOptimizer(learning_rate=params["learning_rate"])
         train_op = optimizer.minimize(
-            loss=loss, global_step=tf.train.get_global_step())
+            loss=loss, global_step=tf.compat.v1.train.get_global_step())
         metrics = {
             "accuracy": tf.metrics.accuracy(labels, y_pred_cls)
         }
