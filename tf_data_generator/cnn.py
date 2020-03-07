@@ -89,15 +89,15 @@ def load_image_wrapper(file, label):
     # return result_tensors
 
 
-dataset = tf.data.Dataset.from_tensor_slices((train, labels)).repeat()
+dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=24)
 dataset = dataset.prefetch(buffer_size=12)
 dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
-dataset = dataset.batch(92, drop_remainder=True)
+dataset = dataset.batch(12, drop_remainder=True).repeat()
 
 iterator = iter(dataset)
 
-batch_image, batch_label = iterator.get_next()
+# batch_image, batch_label = iterator.get_next()
 
 ########################################################################################
 with tf.device("/cpu:0"):
@@ -157,7 +157,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(x=batch_image, y=batch_label, epochs=100, steps_per_epoch=6)
+model.fit(iterator.get_next(), epochs=100, steps_per_epoch=46)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
