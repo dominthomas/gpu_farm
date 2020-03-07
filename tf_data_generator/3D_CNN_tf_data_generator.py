@@ -87,7 +87,7 @@ batch = iterator.get_next()
 
 
 with tf.device("/cpu:0"):
-    img = tf.keras.backend.placeholder(dtype=tf.float64, shape=(100, 100, 100, 1))
+    img = tf.keras.backend.placeholder(dtype=tf.float64, shape=(12, 100, 100, 100, 1))
     with tf.device("/gpu:0"):
         x = Conv3D(64,
                    data_format='channels_last',
