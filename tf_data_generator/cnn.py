@@ -91,8 +91,7 @@ def get_batch():
     return batch_images[0], cat
 
 
-#get_batch()
-# print(data_batch)
+batch = get_batch()
 
 ########################################################################################
 with tf.device("/cpu:0"):
@@ -152,7 +151,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(get_batch, steps_per_epoch=92, epochs=50)
+model.fit(batch, steps_per_epoch=92, epochs=50)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
