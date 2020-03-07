@@ -95,22 +95,19 @@ dataset = dataset.batch(6, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
 
-image_batch, label_batch = iterator.get_next()
+count = 0
 
 
-"""
-def get_batch():
-    batch_images = iterator.get_next()
-    print("========================================")
-    print(batch_images[1])
-    # sq = tf.expand_dims(batch_images[1], 1)
-    # print(sq)
-    cat = tf.keras.utils.to_categorical(batch_images[1], 2)
-    return (batch_images[0], (cat[0]))
+def get_batch(curCount):
+    if curCount == 91:
+        count = 0
+        curCount = 0
+        iterator = iter(dataset)
+    count = curCount + 1
+    return iterator.get_next()
 
 
-batch = get_batch()
-"""
+image_batch, label_batch = get_batch(count)
 
 ########################################################################################
 with tf.device("/cpu:0"):
