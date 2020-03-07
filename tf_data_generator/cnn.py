@@ -59,10 +59,10 @@ def load_image(file, label):
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     # TODO revert
-    nifti = nifti[0:100, 0:100, 0:100]
-    # nifti = nifti[0:2, 0:2, 0:2]
-    nifti = np.reshape(nifti, (1, 100, 100, 100))
-    # nifti = np.reshape(nifti, (2, 2, 2, 1))
+    # nifti = nifti[0:100, 0:100, 0:100]
+    nifti = nifti[0:2, 0:2, 0:2]
+    # nifti = np.reshape(nifti, (1, 100, 100, 100))
+    nifti = np.reshape(nifti, (3, 3, 3, 1))
     # return {file.numpy().decode('utf-8'): nifti}
     return nifti, label
 
@@ -88,11 +88,11 @@ def get_batch():
     cat = tf.keras.utils.to_categorical(batch_images[1], 2)
     print(cat)
     d0 = batch_images[0]
-    print(d[0])
-    return batch_images[0], cat
+    print(d0[0])
+    #return batch_images[0], cat
 
 
-batch = get_batch()
+get_batch()
 
 ########################################################################################
 with tf.device("/cpu:0"):
