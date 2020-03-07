@@ -56,7 +56,7 @@ os.chdir("/home/k1651915/OASIS/3D/all/")
 """Create tf data pipeline"""
 
 
-def load_image(file, label):
+def load_image(file):
     nifti = np.asarray(nibabel.load(file.numpy().decode('utf-8')).get_fdata()).astype(np.float32)
 
     xs, ys, zs = np.where(nifti != 0)
@@ -64,50 +64,30 @@ def load_image(file, label):
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     # nifti = tf.reshape(nifti, [1, 100, 100, 100, 1])
-    return nifti, label
+    return nifti
 
 
 @tf.autograph.experimental.do_not_convert
-def load_image_wrapper(file, label):
-    return tf.py_function(load_image, [file, label], [tf.float64, tf.float64])
+def load_image_wrapper(file):
+    return tf.py_function(load_image, [file], [tf.float64])
 
 
-dataset = tf.data.Dataset.from_tensor_slices((train, labels))
+dataset = tf.data.Dataset.from_tensor_slices(train)
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
 dataset = dataset.batch(3, drop_remainder=True).repeat()
-print(tf.compat.v1.data.get_output_shapes(dataset))
-dataset = dataset.unbatch()
-print(tf.compat.v1.data.get_output_shapes(dataset))
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
+image = iterator.get_next()
 
-image, label = iterator.get_next()
-print(image)
-print("-------------------------------------")
-print(label)
+labels_data = tf.data.Dataset.from_tensor_slices(labels)
+labels_data = dataset.map(load_image_wrapper, num_parallel_calls=12)
+labels_data = dataset.batch(3, drop_remainder=True).repeat()
+labels_data = dataset.prefetch(buffer_size=2)
+iterator2 = iter(labels_data)
+labels = iterator2.get_next()
 
+print(labels)
 
-def get_batch():
-    image_batch, label_batch = iterator.get_next()
-
-    i1 = image_batch[0, :, :, :, :]
-    i2 = image_batch[1, :, :, :, :]
-    i3 = image_batch[2, :, :, :, :]
-    i4 = image_batch[3, :, :, :, :]
-    i5 = image_batch[4, :, :, :, :]
-    i6 = image_batch[5, :, :, :, :]
-    i7 = image_batch[6, :, :, :, :]
-    i8 = image_batch[7, :, :, :, :]
-    i9 = image_batch[8, :, :, :, :]
-    i10 = image_batch[9, :, :, :, :]
-    i11 = image_batch[10, :, :, :, :]
-    i12 = image_batch[11, :, :, :, :]
-
-    image_batch = tf.stack([i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12])
-    return [image_batch, label_batch]
-
-
-batch = get_batch()
 ########################################################################################
 with tf.device("/cpu:0"):
     with tf.device("/gpu:0"):
