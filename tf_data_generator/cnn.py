@@ -75,12 +75,8 @@ def load_image(file, label):
 
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
-    # TODO revert
     nifti = nifti[0:100, 0:100, 0:100]
-    # nifti = nifti[0:2, 0:2, 0:2]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
-    #$ nifti = np.reshape(nifti, (2, 2, 2, 1))
-    # return {file.numpy().decode('utf-8'): nifti}
     return nifti, label
 
 
@@ -91,10 +87,12 @@ def load_image_wrapper(file, label):
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
-dataset = dataset.repeat(138)
-dataset = dataset.batch(4, drop_remainder=True)
+dataset = dataset.repeat(50)
+dataset = dataset.batch(6, drop_remainder=True)
 dataset = dataset.prefetch(buffer_size=1)
 
+# 552 training samples
+# 552 training labels
 ########################################################################################
 with tf.device("/cpu:0"):
     with tf.device("/gpu:0"):
@@ -153,7 +151,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit_generator(dataset, epochs=50, steps_per_epoch=138, validation_data=(v, v_labels))
+model.fit(dataset, epochs=50, steps_per_epoch=92, validation_data=(v, v_labels))
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
