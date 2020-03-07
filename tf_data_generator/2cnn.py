@@ -104,7 +104,6 @@ def cnn_layers(inputs):
     with tf.device("/cpu:0"):
         with tf.device("/gpu:0"):
             x = Conv3D(64,
-                       input_shape=(100, 100, 100, 1),
                        data_format='channels_last',
                        kernel_size=(7, 7, 7),
                        strides=(2, 2, 2),
@@ -156,7 +155,7 @@ def cnn_layers(inputs):
 
 
 inputs, targets = iterator.get_next()
-model_input = tf.keras.Input(tensor=inputs)
+model_input = tf.keras.Input(shape=[100, 100, 100, 1])
 model_output = cnn_layers(model_input)
 train_model = Model(inputs=model_input, outputs=model_output)
 
