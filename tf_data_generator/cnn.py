@@ -83,7 +83,7 @@ def load_image(file, label):
 
 @tf.autograph.experimental.do_not_convert
 def load_image_wrapper(file, label):
-    result_tensors = f.py_function(load_image, [file, label], [tf.float64, tf.float64])
+    result_tensors = tf.py_function(load_image, [file, label], [tf.float64, tf.float64])
     result_tensors.set_shape([None, None, None, None])
     return result_tensors
 
