@@ -93,22 +93,15 @@ dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
 dataset = dataset.batch(6, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=2)
-iterator = iter(dataset)
-
-count = 0
+#iterator = iter(dataset)
 
 
-def get_batch(curCount):
-    global iterator
-    if curCount == 91:
-        count = 0
-        curCount = 0
-        iterator = iter(dataset)
-    count = curCount + 1
-    return iterator.get_next()
+def get_batch():
+    for i in dataset:
+        return i
 
 
-image_batch, label_batch = get_batch(count)
+image_batch, label_batch = get_batch()
 
 ########################################################################################
 with tf.device("/cpu:0"):
