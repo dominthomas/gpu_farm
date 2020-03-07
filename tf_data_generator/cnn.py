@@ -34,14 +34,18 @@ cn_train = cn_files[0:276]
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
+labels = np.concatenate((np.ones(len(ad_train)), np.zeros(len(cn_train))), axis=None)
 random.Random(129).shuffle(train)
+random.Random(129).shuffle(labels)
 print(len(train))
+print(len(labels))
 
-labels = {}
+
+"""labels = {}
 for item in ad_files:
     labels[item] = 1
 for item in cn_files:
-    labels[item] = 0
+    labels[item] = 0"""
 
 """Change working directory to OASIS/3D/all/"""
 os.chdir("/home/k1651915/OASIS/3D/all/")
@@ -75,6 +79,7 @@ iterator = iter(dataset)
 image_batch = iterator.get_next()
 
 
+"""
 def get_batch():
     batch_images = image_batch
     batch_labels = []
@@ -89,7 +94,7 @@ def get_batch():
 
 # data_batch = get_batch()
 # print(data_batch)
-
+"""
 
 ########################################################################################
 with tf.device("/cpu:0"):
