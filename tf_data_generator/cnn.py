@@ -63,6 +63,7 @@ def load_image(file, label):
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
+    nifti = tf.reshape(nifti, [1, 100, 100, 100, 1])
     nifti = tf.convert_to_tensor(nifti, tf.float64)
     return nifti, label
 
@@ -78,7 +79,6 @@ dataset = dataset.batch(12, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
 batch = iterator.get_next()
-print(batch)
 
 
 ########################################################################################
@@ -140,7 +140,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(batch, steps_per_epoch=92, epochs=50)
+model.fit(batch, steps_per_epoch=46, epochs=50)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
