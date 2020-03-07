@@ -64,7 +64,7 @@ v_ad = ad_files[0:5]
 v_cn = cn_files[0:5]
 v_labels = np.concatenate((np.ones(3), np.zeros(2)), axis=None)
 v_ad = np.asarray(get_images(v_ad))
-
+v = [v_ad]
 
 """Create tf data pipeline"""
 
