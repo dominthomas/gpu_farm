@@ -83,17 +83,17 @@ def load_image(file, label):
 
 @tf.autograph.experimental.do_not_convert
 def load_image_wrapper(file, label):
-    return tf.py_function(load_image, [file, label], [tf.float64, tf.float64])
+    result_tensors = f.py_function(load_image, [file, label], [tf.float64, tf.float64])
+    result_tensors.set_shape([None, None, None, None])
+    return result_tensors
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
-dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
+dataset = dataset.map(load_image_wrapper, num_parallel_calls=24)
 dataset = dataset.repeat(50)
 dataset = dataset.batch(12, drop_remainder=True)
 dataset = dataset.prefetch(buffer_size=6)
 
-# 552 training samples
-# 552 training labels
 ########################################################################################
 with tf.device("/cpu:0"):
     with tf.device("/gpu:0"):
@@ -152,7 +152,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(dataset.as_numpy_iterator(), epochs=50, steps_per_epoch=46)
+model.fit(dataset, epochs=50, steps_per_epoch=46)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
