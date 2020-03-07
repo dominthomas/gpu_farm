@@ -91,7 +91,7 @@ def load_image_wrapper(file, label):
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
-dataset = dataset.batch(552, drop_remainder=True).repeat()
+dataset = dataset.batch(92, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=1)
 iterator = iter(dataset)
 image_batch, label_batch = iterator.get_next()
@@ -148,9 +148,9 @@ with tf.device("/cpu:0"):
         model.add(Dropout(0.7))
         model.add(Dense(256, activation='relu'))
         model.add(Dropout(0.7))
-        model.add(Dense(2, activation='softmax'))
+        model.add(Dense(1, activation='sigmoid'))
 
-model.compile(loss=tf.keras.losses.sparse_categorical_crossentropy,
+model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
@@ -171,8 +171,11 @@ ad_test = np.asarray(get_images(ad_test_files))
 os.chdir("/home/k1651915/ADNI/3D/resized_cn/")
 cn_test = np.asarray(get_images(cn_test_files))
 
-ad_test_labels = tf.keras.utils.to_categorical(np.ones(test_size), 2)
-cn_test_labels = tf.keras.utils.to_categorical(np.zeros(test_size), 2)
+# ad_test_labels = tf.keras.utils.to_categorical(np.ones(test_size), 2)
+# cn_test_labels = tf.keras.utils.to_categorical(np.zeros(test_size), 2)
+
+ad_test_labels = np.concatenate((np.ones((test_size-1)), 1), axis=None)
+cn_test_labels = np.concatenate((np.zeros((test_size-1)), 1), axis=None)
 
 # ad_test_labels = np.ones(test_size), 2
 # cn_test_labels = np.zeros(test_size), 2
