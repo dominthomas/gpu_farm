@@ -80,9 +80,27 @@ dataset = dataset.unbatch()
 print(tf.compat.v1.data.get_output_shapes(dataset))
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
-batch = iterator.get_next()
 
 
+def get_batch():
+    image_batch, label_batch = iterator.get_next()
+
+    i1 = image_batch[0, :, :, :, :]
+    i2 = image_batch[1, :, :, :, :]
+    i3 = image_batch[2, :, :, :, :]
+    i4 = image_batch[3, :, :, :, :]
+    i5 = image_batch[4, :, :, :, :]
+    i6 = image_batch[5, :, :, :, :]
+    i7 = image_batch[6, :, :, :, :]
+    i8 = image_batch[7, :, :, :, :]
+    i9 = image_batch[8, :, :, :, :]
+    i10 = image_batch[9, :, :, :, :]
+    i11 = image_batch[10, :, :, :, :]
+    i12 = image_batch[11, :, :, :, :]
+    return [image_batch.toList(), label_batch]
+
+
+batch = get_batch()
 ########################################################################################
 with tf.device("/cpu:0"):
     with tf.device("/gpu:0"):
