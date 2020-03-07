@@ -63,7 +63,7 @@ def load_image(file, label):
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     nifti = tf.convert_to_tensor(nifti, tf.float64)
-    return nifti, tf.cast(label, tf.int32)
+    return nifti, tf.cast(label, tf.float32)
 
 
 @tf.autograph.experimental.do_not_convert
@@ -138,7 +138,7 @@ with tf.device("/cpu:0"):
             preds = Dense(2, activation='softmax')(x)
 
 
-labels = tf.keras.backend.placeholder(dtype=tf.int32, shape=(6, None))
+labels = tf.keras.backend.placeholder(dtype=tf.float32, shape=(6, None))
 
 loss = tf.math.reduce_mean(tf.keras.losses.SparseCategoricalCrossentropy(labels, preds))
 train_step = tf.compat.v1.train.AdagradOptimizer(0.001).minimize(loss)
