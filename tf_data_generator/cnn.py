@@ -88,7 +88,7 @@ def get_batch():
     # sq = tf.expand_dims(batch_images[1], 1)
     # print(sq)
     cat = tf.keras.utils.to_categorical(batch_images[1], 2)
-    return (batch_images[0], cat)
+    return (batch_images[0], (1))
 
 
 batch = get_batch()
@@ -146,7 +146,7 @@ with tf.device("/cpu:0"):
         model.add(Dropout(0.7))
         model.add(Dense(256, activation='relu'))
         model.add(Dropout(0.7))
-        model.add(Dense(2, activation='softmax'))
+        model.add(Dense(1, activation='sigmoid'))
 
 model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
