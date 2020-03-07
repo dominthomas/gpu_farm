@@ -62,9 +62,10 @@ os.chdir("/home/k1651915/OASIS/3D/all/")
 """Get Validation Data"""
 v_ad = ad_files[0:5]
 v_cn = cn_files[0:5]
-v_labels = np.concatenate((np.ones(3), np.zeros(2)), axis=None)
-v_ad = np.asarray(get_images(v_ad))
-v = [v_ad]
+v_labels = np.concatenate((np.ones(5), np.zeros(5)), axis=None)
+v_ad = get_images(v_ad)
+v_cn = get_images(v_cn)
+v = np.asarray(v_ad + v_cn)
 
 """Create tf data pipeline"""
 
