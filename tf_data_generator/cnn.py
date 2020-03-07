@@ -63,7 +63,7 @@ def load_image(file, label):
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
-    nifti = tf.reshape(nifti, [1, 100, 100, 100, 1])
+    #nifti = tf.reshape(nifti, [1, 100, 100, 100, 1])
     return [nifti], label
 
 
