@@ -64,7 +64,7 @@ def load_image(file, label):
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     nifti = tf.reshape(nifti, [1, 100, 100, 100, 1])
-    return nifti, label
+    return [nifti], label
 
 
 @tf.autograph.experimental.do_not_convert
