@@ -65,7 +65,7 @@ def load_image(file, label):
     nifti = np.reshape(nifti, (100, 100, 100, 1))
     nifti = tf.convert_to_tensor(nifti, tf.float64)
     nifti = tf.cast(nifti, tf.float32)
-    label = tf.cast(label, tf.float32)
+    label = tf.cast(label, tf.uint8)
     return nifti, label
 
 
