@@ -97,8 +97,7 @@ dataset = dataset.repeat(50)
 dataset = dataset.prefetch(buffer_size=24)
 dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
 dataset = dataset.batch(12, drop_remainder=True)
-iterator = iter(dataset)
-
+iterator = tf.compat.v1.data.make_one_shot_iterator(dataset)
 
 ########################################################################################
 def cnn_layers(inputs):
