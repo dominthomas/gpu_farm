@@ -63,13 +63,15 @@ def load_image(file, label):
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     nifti = nifti[0:100, 0:100, 0:100]
     nifti = np.reshape(nifti, (100, 100, 100, 1))
-    nifti = tf.convert_to_tensor(nifti, tf.float32)
+    nifti = tf.convert_to_tensor(nifti, tf.float64)
+    nifti = tf.cast(nifti, tf.float32)
+    label = tf.cast(label, tf.float32)
     return nifti, label
 
 
 @tf.autograph.experimental.do_not_convert
 def load_image_wrapper(file, label):
-    return tf.py_function(load_image, [file, label], [tf.float64, tf.float32])
+    return tf.py_function(load_image, [file, label], [tf.float64, tf.int32])
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
