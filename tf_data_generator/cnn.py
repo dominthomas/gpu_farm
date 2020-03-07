@@ -62,10 +62,8 @@ os.chdir("/home/k1651915/OASIS/3D/all/")
 """Get Validation Data"""
 v_ad = ad_files[0:5]
 v_cn = cn_files[0:5]
-v_labels = np.concatenate((np.ones(len(v_ad)), np.zeros(len(v_cn))), axis=None)
+v_labels = np.concatenate((np.ones(3), np.zeros(2)), axis=None)
 v_ad = np.asarray(get_images(v_ad))
-v_cn = np.asarray(get_images(v_cn))
-v = (v_ad + v_cn)
 
 
 """Create tf data pipeline"""
@@ -171,7 +169,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(batch, steps_per_epoch=92, epochs=50, validation_data=(v, v_labels))
+model.fit(batch, steps_per_epoch=92, epochs=50, validation_data=(v_ad, v_labels))
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
