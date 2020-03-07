@@ -7,7 +7,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
 from tensorflow.keras.models import Model
-import tf.keras.backend as K
+import tensorflow.keras.backend as K
 import random
 import os
 import gc
