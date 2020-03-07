@@ -80,9 +80,9 @@ iterator = iter(dataset)
 image = iterator.get_next()
 
 labels_data = tf.data.Dataset.from_tensor_slices(labels)
-labels_data = dataset.map(load_image_wrapper, num_parallel_calls=12)
-labels_data = dataset.batch(3, drop_remainder=True).repeat()
-labels_data = dataset.prefetch(buffer_size=2)
+labels_data = labels_data.map(load_image_wrapper, num_parallel_calls=12)
+labels_data = labels_data.batch(3, drop_remainder=True).repeat()
+labels_data = labels_data.prefetch(buffer_size=2)
 iterator2 = iter(labels_data)
 labels = iterator2.get_next()
 
