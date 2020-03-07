@@ -77,18 +77,18 @@ dataset = dataset.map(load_image_wrapper, num_parallel_calls=12)
 dataset = dataset.batch(6, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
-image_batch = iterator.get_next()
 
 
 def get_batch():
-    batch_images = image_batch
+    batch_images = iterator.get_next()
     print("========================================")
     print(batch_images[1])
     # sq = tf.expand_dims(batch_images[1], 1)
     # print(sq)
     cat = tf.keras.utils.to_categorical(batch_images[1], 2)
+    the_batch = tf.reshape(batch_images[0], (100, 100, 100, 1))
     print(cat)
-    return batch_images[0], cat
+    return the_batch, cat
 
 
 batch = get_batch()
