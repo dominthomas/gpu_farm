@@ -59,11 +59,12 @@ def load_image(file, label):
     xs, ys, zs = np.where(nifti != 0)
     nifti = nifti[min(xs):max(xs) + 1, min(ys):max(ys) + 1, min(zs):max(zs) + 1]
     # TODO revert
-    nifti = nifti[0:100, 0:100, 0:100]
-    # nifti = nifti[0:2, 0:2, 0:2]
-    nifti = np.reshape(nifti, (100, 100, 100, 1))
+    # nifti = nifti[0:100, 0:100, 0:100]
+    nifti = nifti[0:2, 0:2, 0:2]
+    # nifti = np.reshape(nifti, (100, 100, 100, 1))
+    nifti = np.reshape(nifti, (2, 2, 2, 1))
     # return {file.numpy().decode('utf-8'): nifti}
-    return (nifti, label)
+    return nifti, label
 
 
 @tf.autograph.experimental.do_not_convert
@@ -77,6 +78,8 @@ dataset = dataset.batch(6, drop_remainder=True).repeat()
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
 image_batch = iterator.get_next()
+
+print(image_batch)
 
 
 """
