@@ -161,7 +161,7 @@ class CNN_Model(Model):
 def model_fn(features, labels, mode, params):
     m = CNN_Model()
     logits = CNN_Model.cnn_model(m, features)
-    y_pred = tf.nn.softmax(logits=logits, labels=labels)
+    y_pred = tf.nn.softmax(logits=logits)
     y_pred = tf.identity(y_pred, name="output_pred")
     y_pred_cls = tf.argmax(y_pred, axis=1)
     y_pred_cls = tf.identity(y_pred_cls, name="output_cls")
