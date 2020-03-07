@@ -85,7 +85,7 @@ def load_image(file, label):
 def load_image_wrapper(file, label):
     result_tensors = tf.py_function(load_image, [file, label], [tf.float64, tf.float64])
     result_tensors[0].set_shape([100, 100, 100, 1])
-    result_tensors[1].set_shape([0])
+    result_tensors[1].set_shape([None])
     return result_tensors
 
 
