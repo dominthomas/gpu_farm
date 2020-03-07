@@ -80,14 +80,9 @@ dataset = dataset.unbatch()
 print(tf.compat.v1.data.get_output_shapes(dataset))
 dataset = dataset.prefetch(buffer_size=2)
 iterator = iter(dataset)
+batch = iterator.get_next()
 
 
-def get_batch():
-    image_batch, label_batch = iterator.get_next()
-    return [image_batch.toList(), label_batch]
-
-
-batch = get_batch()
 ########################################################################################
 with tf.device("/cpu:0"):
     with tf.device("/gpu:0"):
@@ -147,7 +142,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(get_batch, steps_per_epoch=46, epochs=50)
+model.fit(batch, steps_per_epoch=46, epochs=50)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
