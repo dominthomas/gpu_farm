@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Conv3D, MaxPooling3D
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.layers import Flatten
+import datetime
 import random
 import os
 import gc
@@ -170,6 +171,7 @@ train_accuracy_results = []
 num_epochs = 101
 
 for epoch in range(num_epochs):
+    start = datetime.datetime.now()
     epoch_loss_avg = tf.keras.metrics.Mean()
     epoch_accuracy = tf.keras.metrics.BinaryCrossentropy()
     iterator = iter(dataset)
@@ -195,10 +197,12 @@ for epoch in range(num_epochs):
     train_loss_results.append(epoch_loss_avg.result())
     train_accuracy_results.append(epoch_accuracy.result())
 
+    stop = datetime.datetime.now()
+    diff = stop-start
     print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
                                                                 epoch_loss_avg.result(),
                                                                 epoch_accuracy.result()))
-
+    print(diff.seconds)
 
 
 """
