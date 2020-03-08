@@ -170,37 +170,36 @@ train_loss_results = []
 train_accuracy_results = []
 num_epochs = 101
 
-with tf.compat.v1.Session as session:
-    for epoch in range(num_epochs):
-        epoch_loss_avg = tf.keras.metrics.Mean()
-        epoch_accuracy = tf.keras.metrics.BinaryCrossentropy()
-        iterator = iter(dataset)
+for epoch in range(num_epochs):
+    epoch_loss_avg = tf.keras.metrics.Mean()
+    epoch_accuracy = tf.keras.metrics.BinaryCrossentropy()
+    iterator = iter(dataset)
 
-        # Training loop - using batches of 12
-        try:
-            while True:
-                batch = iterator.get_next()
-                for x, y in batch:
-                    # Optimize the model
-                    loss_value, grads = grad(model, x, y)
-                    optimizer.apply_gradients(zip(grads, model.trainable_variables))
+    # Training loop - using batches of 12
+    try:
+        while True:
+            batch = iterator.get_next()
+            for x, y in batch:
+                # Optimize the model
+                loss_value, grads = grad(model, x, y)
+                optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
-                    # Track progress
-                    epoch_loss_avg(loss_value)  # Add current batch loss
-                    # Compare predicted label to actual label
-                    # training=True is needed only if there are layers with different
-                    # behavior during training versus inference (e.g. Dropout).
-                    epoch_accuracy(y, model(x, training=True))
-        except tf.errors.OutOfRangeError:
-            print("Epoch end...")
+                # Track progress
+                epoch_loss_avg(loss_value)  # Add current batch loss
+                # Compare predicted label to actual label
+                # training=True is needed only if there are layers with different
+                # behavior during training versus inference (e.g. Dropout).
+                epoch_accuracy(y, model(x, training=True))
+    except tf.errors.OutOfRangeError:
+        print("Epoch end...")
 
-        # End epoch
-        train_loss_results.append(epoch_loss_avg.result())
-        train_accuracy_results.append(epoch_accuracy.result())
+    # End epoch
+    train_loss_results.append(epoch_loss_avg.result())
+    train_accuracy_results.append(epoch_accuracy.result())
 
-        print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
-                                                                    epoch_loss_avg.result(),
-                                                                    epoch_accuracy.result()))
+    print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
+                                                                epoch_loss_avg.result(),
+                                                                epoch_accuracy.result()))
 
 
 
