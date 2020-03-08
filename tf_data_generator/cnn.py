@@ -156,7 +156,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(batch_image, batch_label, epochs=80, batch_size=12)
+model.fit(batch_image, batch_label, epochs=70, batch_size=12)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
