@@ -84,9 +84,6 @@ def load_image(file, label):
 @tf.autograph.experimental.do_not_convert
 def load_image_wrapper(file, label):
     return tf.py_function(load_image, [file, label], [tf.float64, tf.float64])
-    # result_tensors[0].set_shape([100, 100, 100, 1])
-    # result_tensors[1].set_shape([None])
-    # return result_tensors
 
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
@@ -161,7 +158,7 @@ model.fit(batch_image, batch_label, epochs=100, batch_size=12)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
-test_size = 5
+test_size = 50
 ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
 cn_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_cn/")
 random.Random(921).shuffle(ad_test_files)
