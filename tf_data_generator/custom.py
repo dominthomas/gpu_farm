@@ -92,10 +92,7 @@ dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=24)
 dataset = dataset.prefetch(buffer_size=12)
 dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
-dataset = dataset.batch(12, drop_remainder=True).repeat()
-iterator = iter(dataset)
-
-batch = iterator.get_next()
+dataset = dataset.batch(12, drop_remainder=True)
 
 ########################################################################################
 with tf.device("/cpu:0"):
@@ -173,30 +170,38 @@ train_loss_results = []
 train_accuracy_results = []
 num_epochs = 101
 
-for epoch in range(num_epochs):
-    epoch_loss_avg = tf.keras.metrics.Mean()
-    epoch_accuracy = tf.keras.metrics.BinaryCrossentropy()
+with tf.compat.v1.Session as session:
+    for epoch in range(num_epochs):
+        epoch_loss_avg = tf.keras.metrics.Mean()
+        epoch_accuracy = tf.keras.metrics.BinaryCrossentropy()
+        iterator = iter(dataset)
 
-    # Training loop - using batches of 32
-    for x, y in batch:
-        # Optimize the model
-        loss_value, grads = grad(model, x, y)
-        optimizer.apply_gradients(zip(grads, model.trainable_variables))
+        # Training loop - using batches of 12
+        try:
+            while True:
+                batch = iterator.get_next()
+                for x, y in batch:
+                    # Optimize the model
+                    loss_value, grads = grad(model, x, y)
+                    optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
-        # Track progress
-        epoch_loss_avg(loss_value)  # Add current batch loss
-        # Compare predicted label to actual label
-        # training=True is needed only if there are layers with different
-        # behavior during training versus inference (e.g. Dropout).
-        epoch_accuracy(y, model(x, training=True))
+                    # Track progress
+                    epoch_loss_avg(loss_value)  # Add current batch loss
+                    # Compare predicted label to actual label
+                    # training=True is needed only if there are layers with different
+                    # behavior during training versus inference (e.g. Dropout).
+                    epoch_accuracy(y, model(x, training=True))
+        except tf.errors.OutOfRangeError:
+            print("Epoch end...")
 
-    # End epoch
-    train_loss_results.append(epoch_loss_avg.result())
-    train_accuracy_results.append(epoch_accuracy.result())
+        # End epoch
+        train_loss_results.append(epoch_loss_avg.result())
+        train_accuracy_results.append(epoch_accuracy.result())
 
-    print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
-                                                                epoch_loss_avg.result(),
-                                                                epoch_accuracy.result()))
+        print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
+                                                                    epoch_loss_avg.result(),
+                                                                    epoch_accuracy.result()))
+
 
 
 """
