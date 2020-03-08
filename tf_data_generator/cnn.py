@@ -28,9 +28,11 @@ cn_files = os.listdir("/home/k1651915/OASIS/3D/cn/")
 random.Random(129).shuffle(ad_files)
 random.Random(129).shuffle(cn_files)
 
+batch_size = 261
+
 """Split files for training"""
-ad_train = ad_files[0:261]
-cn_train = cn_files[0:261]
+ad_train = ad_files[0:batch_size]
+cn_train = cn_files[0:batch_size]
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
@@ -90,7 +92,7 @@ dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=32)
 dataset = dataset.prefetch(buffer_size=1)
 dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
-dataset = dataset.batch(522, drop_remainder=True).repeat()
+dataset = dataset.batch((batch_size*2), drop_remainder=True).repeat()
 
 iterator = iter(dataset)
 
@@ -154,7 +156,7 @@ model.compile(loss=tf.keras.losses.binary_crossentropy,
               optimizer=tf.keras.optimizers.Adagrad(0.01),
               metrics=['accuracy'])
 ########################################################################################
-model.fit(batch_image, batch_label, epochs=50, batch_size=12)
+model.fit(batch_image, batch_label, epochs=80, batch_size=12)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
