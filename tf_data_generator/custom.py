@@ -180,6 +180,7 @@ for epoch in range(num_epochs):
     # Training loop - using batches of 32
     for x, y in dataset:
         # Optimize the model
+        y = tf.reshape(y, [1])
         loss_value, grads = grad(model, x, y)
         optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
