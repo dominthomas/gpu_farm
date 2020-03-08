@@ -29,8 +29,8 @@ random.Random(129).shuffle(ad_files)
 random.Random(129).shuffle(cn_files)
 
 """Split files for training"""
-ad_train = ad_files[0:278]
-cn_train = cn_files[0:278]
+ad_train = ad_files[0:261]
+cn_train = cn_files[0:261]
 
 """Shuffle Train data and Train labels"""
 train = ad_train + cn_train
@@ -158,6 +158,7 @@ model.fit(batch_image, batch_label, epochs=50, batch_size=12)
 ########################################################################################
 
 """Load test data from ADNI, 50 AD & 50 CN MRIs"""
+"""
 test_size = 50
 ad_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_ad/")
 cn_test_files = os.listdir("/home/k1651915/ADNI/3D/resized_cn/")
@@ -190,6 +191,27 @@ with open("/home/k1651915/3.txt", "a") as f:
     f.write("%s\n" % evaluation_ad[1])
     f.write("%s\n" % evaluation_cn[1])
     f.write("%s\n" % "========")
-
+"""
 # K.clear_session()
 gc.collect()
+test_size = 17
+ad_test_files = ad_files[261:278]
+cn_test_files = cn_files[261:278]
+
+ad_test_labels = np.concatenate((np.ones((test_size-1)), 1), axis=None)
+cn_test_labels = np.concatenate((np.zeros((test_size-1)), 1), axis=None)
+
+ad_test = np.asarray(get_images(ad_test_files))
+cn_test = np.asarray(get_images(ad_test_files))
+
+evaluation_ad = model.evaluate(ad_test, ad_test_labels, verbose=0)
+evaluation_cn = model.evaluate(cn_test, cn_test_labels, verbose=0)
+
+print("AD: ", evaluation_ad[1])
+print("CN: ", evaluation_cn[1])
+
+with open("/home/k1651915/3.txt", "a") as f:
+    f.write("%s\n" % evaluation_ad[1])
+    f.write("%s\n" % evaluation_cn[1])
+    f.write("%s\n" % "========")
+
