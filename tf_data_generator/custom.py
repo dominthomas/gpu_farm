@@ -90,9 +90,8 @@ def load_image_wrapper(file, label):
 
 dataset = tf.data.Dataset.from_tensor_slices((train, labels))
 dataset = dataset.map(load_image_wrapper, num_parallel_calls=24)
-dataset = dataset.prefetch(buffer_size=12)
-dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
-dataset = dataset.batch(12, drop_remainder=True)
+# dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
+dataset = dataset.batch(12, drop_remainder=True).prefetch(buffer_size=2).cache()
 
 ########################################################################################
 with tf.device("/cpu:0"):
