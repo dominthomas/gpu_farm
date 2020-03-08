@@ -175,12 +175,11 @@ num_epochs = 101
 
 for epoch in range(num_epochs):
     epoch_loss_avg = tf.keras.metrics.Mean()
-    epoch_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
+    epoch_accuracy = tf.keras.metrics.BinaryCrossentropy()
 
     # Training loop - using batches of 32
     for x, y in dataset:
         # Optimize the model
-        y = tf.reshape(y, [1])
         loss_value, grads = grad(model, x, y)
         optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
