@@ -93,7 +93,7 @@ dataset = dataset.map(load_image_wrapper, num_parallel_calls=24)
 dataset = dataset.prefetch(buffer_size=12)
 dataset = dataset.apply(tf.data.experimental.prefetch_to_device('/device:GPU:0', 1))
 dataset = dataset.batch(12, drop_remainder=True).repeat()
-iterator = iter(dataset)
+# iterator = iter(dataset)
 
 # batch_image, batch_label = iterator.get_next()
 
@@ -178,7 +178,7 @@ for epoch in range(num_epochs):
     epoch_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
 
     # Training loop - using batches of 32
-    for x, y in iterator.get_next():
+    for x, y in dataset:
         # Optimize the model
         loss_value, grads = grad(model, x, y)
         optimizer.apply_gradients(zip(grads, model.trainable_variables))
