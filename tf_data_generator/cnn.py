@@ -196,9 +196,9 @@ with open("/home/k1651915/3.txt", "a") as f:
 """
 # K.clear_session()
 gc.collect()
-test_size = 17
 ad_test_files = ad_files[261:278]
 cn_test_files = cn_files[261:278]
+test_size = len(ad_test_files)
 
 ad_test_labels = np.concatenate((np.ones((test_size-1)), 1), axis=None)
 cn_test_labels = np.concatenate((np.zeros((test_size-1)), 1), axis=None)
