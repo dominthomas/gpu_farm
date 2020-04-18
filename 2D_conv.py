@@ -57,7 +57,6 @@ def crop(img, tol=0):
 
 
 def get_images(folders, train=False, same_length=False, data_length=0, adni=False):
-    data_length = data_length * 3
 
     return_list = []
     for folder in folders:
@@ -185,6 +184,10 @@ for i in seeds:
     cn_train = get_images(cn_sub_train_files, True)
     cn_validate = get_images(cn_sub_validate_files, same_length=True, data_length=5)
     cn_test = get_images(cn_sub_test_files, same_length=True, data_length=8)
+    print(len(ad_train))
+    print(len(cn_train))
+    print(len(ad_validate))
+    print(len(cn_validate))
     print(len(ad_test))
     print(len(cn_test))
 
