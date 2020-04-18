@@ -57,6 +57,7 @@ def crop(img, tol=0):
 
 
 def get_images(folders, train=False, same_length=False, data_length=0, adni=False):
+    data_length = data_length * 3
 
     return_list = []
     for folder in folders:
