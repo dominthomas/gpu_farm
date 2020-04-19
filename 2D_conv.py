@@ -144,9 +144,9 @@ for i in seeds:
     random.shuffle(sub_id_cn)
 
     os.chdir("/home/k1651915/OASIS/2D/AD/")
-    ad_sub_train = sub_id_ad[0:124]
-    ad_sub_validate = sub_id_ad[125:130]
-    ad_sub_test = sub_id_ad[131:177]
+    ad_sub_train = sub_id_ad[0:164]
+    ad_sub_validate = sub_id_ad[165:169]
+    ad_sub_test = sub_id_ad[170:177]
 
     ad_sub_train_files = []
     ad_sub_validate_files = []
@@ -163,9 +163,9 @@ for i in seeds:
 
     os.chdir("/home/k1651915/OASIS/2D/CN")
 
-    cn_sub_train = sub_id_cn[0:534]
-    cn_sub_validate = sub_id_cn[535:540]
-    cn_sub_test = sub_id_cn[541:587]
+    cn_sub_train = sub_id_cn[0:573]
+    cn_sub_validate = sub_id_cn[574:579]
+    cn_sub_test = sub_id_cn[580:587]
 
     cn_sub_train_files = []
     cn_sub_validate_files = []
