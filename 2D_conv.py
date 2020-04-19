@@ -223,6 +223,10 @@ for i in seeds:
     ad_validate = None
     cn_test = None
     ad_test = None
+
+    #ADNI
+    cn_train_adni = None
+    ad_train_adni = None
     gc.collect()
 
     #################################################
