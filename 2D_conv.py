@@ -140,9 +140,9 @@ for i in seeds:
     random.shuffle(sub_id_cn)
 
     os.chdir("/home/k1651915/OASIS/2D/AD/")
-    ad_sub_train = sub_id_ad[0:164]
-    ad_sub_validate = sub_id_ad[165:169]
-    ad_sub_test = sub_id_ad[170:177]
+    ad_sub_train = sub_id_ad[0:124]
+    ad_sub_validate = sub_id_ad[125:130]
+    ad_sub_test = sub_id_ad[131:177]
 
     ad_sub_train_files = []
     ad_sub_validate_files = []
@@ -159,9 +159,9 @@ for i in seeds:
 
     os.chdir("/home/k1651915/OASIS/2D/CN")
 
-    cn_sub_train = sub_id_cn[0:573]
-    cn_sub_validate = sub_id_cn[574:579]
-    cn_sub_test = sub_id_cn[580:587]
+    cn_sub_train = sub_id_cn[0:534]
+    cn_sub_validate = sub_id_cn[535:540]
+    cn_sub_test = sub_id_cn[541:587]
 
     cn_sub_train_files = []
     cn_sub_validate_files = []
@@ -179,12 +179,19 @@ for i in seeds:
     os.chdir('/home/k1651915/OASIS/2D/AD/')
     ad_train = get_images(ad_sub_train_files, True)
     ad_validate = get_images(ad_sub_validate_files, same_length=True, data_length=5)
-    ad_test = get_images(ad_sub_test_files)
+    ad_test = get_images(ad_sub_test_files, same_length=True, data_length=8)
+
+    adni_ad_files = os.listdir('/home/k1651915/ADNI/2D/AD/')
+    adni_cn_files = os.listdir('/home/k1651915/ADNI/2D/CN/')
+    os.chdir('/home/k1651915/ADNI/2D/AD/')
+    ad_train_adni = get_images(adni_ad_files, True, adni=True)
+    os.chdir('/home/k1651915/ADNI/2D/CN/')
+    cn_train_adni = get_images(adni_cn_files, True, adni=True)
 
     os.chdir('/home/k1651915/OASIS/2D/CN/')
     cn_train = get_images(cn_sub_train_files, True)
     cn_validate = get_images(cn_sub_validate_files, same_length=True, data_length=5)
-    cn_test = get_images(cn_sub_test_files, same_length=True, data_length=(len(ad_test)/3))
+    cn_test = get_images(cn_sub_test_files, same_length=True, data_length=8)
     print(len(ad_train))
     print(len(cn_train))
     print(len(ad_validate))
@@ -192,13 +199,15 @@ for i in seeds:
     print(len(ad_test))
     print(len(cn_test))
 
-    train = np.asarray(cn_train + ad_train)
+    train = np.asarray(cn_train + cn_train_adni + ad_train + ad_train_adni)
     validate = np.asarray(cn_validate + ad_validate)
     test = np.asarray(cn_test + ad_test)
 
     y1 = np.zeros(len(cn_train))
+    y1_adni = np.zeros(len(cn_train_adni))
     y2 = np.ones(len(ad_train))
-    train_labels = np.concatenate((y1, y2), axis=None)
+    y2_adni = np.ones(len(ad_train_adni))
+    train_labels = np.concatenate((y1, y1_adni, y2, y2_adni), axis=None)
 
     y1 = np.zeros(len(cn_validate))
     y2 = np.ones(len(ad_validate))
