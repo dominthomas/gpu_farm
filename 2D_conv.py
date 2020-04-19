@@ -56,7 +56,7 @@ def crop(img, tol=0):
     return img[row_start:row_end, col_start:col_end]
 
 
-def get_images(folders, train=False, same_length=False, data_length=0, adni=False):
+def get_images(folders, train=False, same_length=False, data_length=0, adni=False, ad=False):
     data_length = data_length * 3
 
     return_list = []
@@ -87,9 +87,9 @@ def get_images(folders, train=False, same_length=False, data_length=0, adni=Fals
             png2 = get_rotated_images(png2, custom_angle=True, angle=-180)[0][:, :, 0]
 
         if train:
-            return_list = return_list + get_rotated_images(png0)
-            return_list = return_list + get_rotated_images(png1)
-            return_list = return_list + get_rotated_images(png2)
+            return_list = return_list + get_rotated_images(png0, ad=ad)
+            return_list = return_list + get_rotated_images(png1, ad=ad)
+            return_list = return_list + get_rotated_images(png2, ad=ad)
 
         png0 = crop(png0)
         png1 = crop(png1)
@@ -109,8 +109,12 @@ def get_images(folders, train=False, same_length=False, data_length=0, adni=Fals
     return return_list
 
 
-def get_rotated_images(png, custom_angle=False, angle=0):
-    angles = [3, -4, -3, 4, 1, 2, -1, -2]
+def get_rotated_images(png, custom_angle=False, angle=0, ad=False):
+    if ad:
+        angles = [3, -4, -3, 4, 1, 2, -1, -2]
+    else:
+        angles = [3, -4, -3, 4]
+
     rotated_pngs = []
 
     if custom_angle:
@@ -179,7 +183,7 @@ for i in seeds:
     os.chdir('/home/k1651915/OASIS/2D/AD/')
     ad_train = get_images(ad_sub_train_files, True)
     ad_validate = get_images(ad_sub_validate_files, same_length=True, data_length=5)
-    ad_test = get_images(ad_sub_test_files, same_length=True, data_length=8)
+    ad_test = get_images(ad_sub_test_files)
 
     adni_ad_files = os.listdir('/home/k1651915/ADNI/2D/AD/')
     adni_cn_files = os.listdir('/home/k1651915/ADNI/2D/CN/')
@@ -191,7 +195,7 @@ for i in seeds:
     os.chdir('/home/k1651915/OASIS/2D/CN/')
     cn_train = get_images(cn_sub_train_files, True)
     cn_validate = get_images(cn_sub_validate_files, same_length=True, data_length=5)
-    cn_test = get_images(cn_sub_test_files, same_length=True, data_length=8)
+    cn_test = get_images(cn_sub_test_files, same_length=True, data_length=(len(ad_test)/3))
     print(len(ad_train))
     print(len(cn_train))
     print(len(ad_validate))
