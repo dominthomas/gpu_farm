@@ -111,9 +111,9 @@ def get_images(folders, train=False, same_length=False, data_length=0, adni=Fals
 
 def get_rotated_images(png, custom_angle=False, angle=0, ad=False):
     if ad:
-        angles = [3, -4, -3, 4, 1, 2, -1, -2]
+        angles = [3, -4, -3, 4, 1, 2, -1, -2, -0.5, 0.5, 1.5, -1.5, 2.5, -2.5, 3.5, -3.5]
     else:
-        angles = [3, -4, -3, 4]
+        angles = [3, -4, -3, 4, 1, 2, -1, -2]
 
     rotated_pngs = []
 
