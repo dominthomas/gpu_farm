@@ -185,8 +185,8 @@ for i in seeds:
     ad_validate = get_images(ad_sub_validate_files, same_length=True, data_length=5)
     ad_test = get_images(ad_sub_test_files)
 
-    adni_ad_files = os.listdir('/home/k1651915/ADNI/2D/AD/')
-    adni_cn_files = os.listdir('/home/k1651915/ADNI/2D/CN/')
+    adni_ad_files = os.listdir('/home/k1651915/ADNI/2D/2D/AD_3T/')
+    adni_cn_files = os.listdir('/home/k1651915/ADNI/2D/2D/CN_3T/')
     os.chdir('/home/k1651915/ADNI/2D/AD/')
     ad_train_adni = get_images(adni_ad_files, True, adni=True, ad=True)
     os.chdir('/home/k1651915/ADNI/2D/CN/')
